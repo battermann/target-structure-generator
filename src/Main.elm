@@ -8,6 +8,7 @@ import Browser
 import FirstPositionDropdown
 import Html
 import Html.Attributes
+import MelodicFormDropdown
 import Metryx exposing (Metryx(..))
 import MetryxDropdown
 import Mode exposing (Mode(..))
@@ -22,6 +23,7 @@ type alias Model =
     { metryx : MetryxDropdown.Model
     , mode : ModeDropdown.Model
     , firstPosition : FirstPositionDropdown.Model
+    , melodicForm : MelodicFormDropdown.Model
     }
 
 
@@ -30,6 +32,7 @@ init =
     ( { metryx = MetryxDropdown.init
       , mode = ModeDropdown.init
       , firstPosition = FirstPositionDropdown.init
+      , melodicForm = MelodicFormDropdown.init
       }
     , Cmd.none
     )
@@ -43,6 +46,7 @@ type Msg
     = MetryxMsg MetryxDropdown.Msg
     | ModeMsg ModeDropdown.Msg
     | FirstPositionMsg FirstPositionDropdown.Msg
+    | MelodicFormMsg MelodicFormDropdown.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -56,6 +60,9 @@ update msg model =
 
         FirstPositionMsg firstPositionMsg ->
             ( { model | firstPosition = FirstPositionDropdown.update firstPositionMsg model.firstPosition }, Cmd.none )
+
+        MelodicFormMsg melodicFormMsg ->
+            ( { model | melodicForm = MelodicFormDropdown.update melodicFormMsg model.melodicForm }, Cmd.none )
 
 
 
@@ -76,6 +83,7 @@ view model =
                         [ Html.div [ Spacing.mt2 ] [ MetryxDropdown.view model.metryx |> Html.map MetryxMsg ]
                         , Html.div [ Spacing.mt2 ] [ ModeDropdown.view model.mode |> Html.map ModeMsg ]
                         , Html.div [ Spacing.mt2 ] [ FirstPositionDropdown.view model.firstPosition |> Html.map FirstPositionMsg ]
+                        , Html.div [ Spacing.mt2 ] [ MelodicFormDropdown.view model.melodicForm |> Html.map MelodicFormMsg ]
                         ]
                     ]
                 ]
@@ -94,6 +102,7 @@ subscriptions model =
         [ MetryxDropdown.subscriptions model.metryx |> Sub.map MetryxMsg
         , ModeDropdown.subscriptions model.mode |> Sub.map ModeMsg
         , FirstPositionDropdown.subscriptions model.firstPosition |> Sub.map FirstPositionMsg
+        , MelodicFormDropdown.subscriptions model.melodicForm |> Sub.map MelodicFormMsg
         ]
 
 
