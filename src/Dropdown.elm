@@ -4,6 +4,7 @@ import Bootstrap.Button as Button
 import Bootstrap.Dropdown as Dropdown
 import Bootstrap.Utilities.Size as Size
 import Html
+import Html.Attributes
 import Html.Events
 import Metryx exposing (Metryx(..))
 import Mode exposing (Mode(..))
@@ -13,7 +14,7 @@ view : String -> (Dropdown.State -> msg) -> Dropdown.State -> List ( msg, String
 view name toggleMsg state items =
     Dropdown.dropdown
         state
-        { options = [ Dropdown.attrs [ Size.w25 ], Dropdown.dropRight ]
+        { options = [ Dropdown.attrs [ Size.w100, Html.Attributes.style "max-width" "300px" ] ]
         , toggleMsg = toggleMsg
         , toggleButton =
             Dropdown.toggle [ Button.outlinePrimary, Button.large ] [ Html.text name ]
