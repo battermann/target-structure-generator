@@ -1,4 +1,6 @@
-module Metryx exposing (Metryx(..), all, toString)
+module Metryx exposing (Metryx(..), all, random, toString)
+
+import Random
 
 
 type Metryx
@@ -66,3 +68,8 @@ toString metryx =
 
         Metryx_7_2 ->
             "7-2"
+
+
+random : Random.Generator Metryx
+random =
+    Random.uniform Metryx_3_2 all

@@ -1,6 +1,7 @@
-module Tempo exposing (Tempo, bpm, range, tempo)
+module Tempo exposing (Tempo, bpm, random, range, tempo)
 
 import Metryx exposing (Metryx(..))
+import Random
 
 
 type Tempo
@@ -64,3 +65,12 @@ tempo metryx v =
 bpm : Tempo -> Int
 bpm (Bpm v) =
     v
+
+
+random : Metryx -> Random.Generator Tempo
+random metryx =
+    let
+        ( min, max ) =
+            range metryx
+    in
+    Random.int min max |> Random.map Bpm

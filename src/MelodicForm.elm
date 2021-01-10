@@ -1,4 +1,6 @@
-module MelodicForm exposing (MelodicForm(..), all, toString)
+module MelodicForm exposing (MelodicForm(..), all, random, toString)
+
+import Random
 
 
 type MelodicForm
@@ -19,3 +21,8 @@ toString melodicForm =
 
         Sequence ->
             "Sequence"
+
+
+random : Random.Generator MelodicForm
+random =
+    Random.uniform Period all

@@ -1,4 +1,6 @@
-module FirstPosition exposing (FirstPosition(..), all, toString)
+module FirstPosition exposing (FirstPosition(..), all, random, toString)
+
+import Random
 
 
 type FirstPosition
@@ -19,3 +21,8 @@ toString firstPosition =
 
         Closed ->
             "Closed"
+
+
+random : Random.Generator FirstPosition
+random =
+    Random.uniform Open all

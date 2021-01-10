@@ -1,4 +1,6 @@
-module Mode exposing (Mode(..), all, toString)
+module Mode exposing (Mode(..), all, random, toString)
+
+import Random
 
 
 type Mode
@@ -41,3 +43,8 @@ toString mode =
 
         Aeolian ->
             "Aeolian"
+
+
+random : Random.Generator Mode
+random =
+    Random.uniform Ionian all
