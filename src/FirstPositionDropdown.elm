@@ -19,7 +19,7 @@ type alias Model =
 init : Model
 init =
     { dropdownState = Dropdown.initialState
-    , firstPosition = Closed
+    , firstPosition = Open
     }
 
 
