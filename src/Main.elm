@@ -5,6 +5,7 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Utilities.Flex as Flex
 import Bootstrap.Utilities.Spacing as Spacing
 import Browser
+import FirstPositionDropdown
 import Html
 import Html.Attributes
 import Metryx exposing (Metryx(..))
@@ -20,6 +21,7 @@ import ModeDropdown
 type alias Model =
     { metryx : MetryxDropdown.Model
     , mode : ModeDropdown.Model
+    , firstPosition : FirstPositionDropdown.Model
     }
 
 
@@ -27,6 +29,7 @@ init : ( Model, Cmd Msg )
 init =
     ( { metryx = MetryxDropdown.init
       , mode = ModeDropdown.init
+      , firstPosition = FirstPositionDropdown.init
       }
     , Cmd.none
     )
@@ -39,6 +42,7 @@ init =
 type Msg
     = MetryxMsg MetryxDropdown.Msg
     | ModeMsg ModeDropdown.Msg
+    | FirstPositionMsg FirstPositionDropdown.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -49,6 +53,9 @@ update msg model =
 
         ModeMsg modeMsg ->
             ( { model | mode = ModeDropdown.update modeMsg model.mode }, Cmd.none )
+
+        FirstPositionMsg firstPositionMsg ->
+            ( { model | firstPosition = FirstPositionDropdown.update firstPositionMsg model.firstPosition }, Cmd.none )
 
 
 
@@ -68,6 +75,7 @@ view model =
                     , Html.div [ Flex.block, Flex.col ]
                         [ Html.div [ Spacing.mt2 ] [ MetryxDropdown.view model.metryx |> Html.map MetryxMsg ]
                         , Html.div [ Spacing.mt2 ] [ ModeDropdown.view model.mode |> Html.map ModeMsg ]
+                        , Html.div [ Spacing.mt2 ] [ FirstPositionDropdown.view model.firstPosition |> Html.map FirstPositionMsg ]
                         ]
                     ]
                 ]
@@ -85,6 +93,7 @@ subscriptions model =
     Sub.batch
         [ MetryxDropdown.subscriptions model.metryx |> Sub.map MetryxMsg
         , ModeDropdown.subscriptions model.mode |> Sub.map ModeMsg
+        , FirstPositionDropdown.subscriptions model.firstPosition |> Sub.map FirstPositionMsg
         ]
 
 

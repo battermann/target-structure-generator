@@ -1,10 +1,9 @@
-module MetryxDropdown exposing (Model, Msg, init, subscriptions, update, view)
+module FirstPositionDropdown exposing (Model, Msg, init, subscriptions, update, view)
 
 import Bootstrap.Dropdown as Dropdown
 import Dropdown
+import FirstPosition exposing (FirstPosition(..))
 import Html
-import Metryx exposing (Metryx(..))
-import Mode exposing (Mode(..))
 
 
 
@@ -13,14 +12,14 @@ import Mode exposing (Mode(..))
 
 type alias Model =
     { dropdownState : Dropdown.State
-    , metryx : Metryx
+    , firstPosition : FirstPosition
     }
 
 
 init : Model
 init =
     { dropdownState = Dropdown.initialState
-    , metryx = Metryx_3_2
+    , firstPosition = Closed
     }
 
 
@@ -30,7 +29,7 @@ init =
 
 type Msg
     = DropdownStateMsg Dropdown.State
-    | MetryxMsg Metryx
+    | FirstPositionMsg FirstPosition
 
 
 update : Msg -> Model -> Model
@@ -39,8 +38,8 @@ update msg model =
         DropdownStateMsg state ->
             { model | dropdownState = state }
 
-        MetryxMsg metryx ->
-            { model | metryx = metryx }
+        FirstPositionMsg metryx ->
+            { model | firstPosition = metryx }
 
 
 
@@ -50,10 +49,10 @@ update msg model =
 view : Model -> Html.Html Msg
 view model =
     Dropdown.view
-        ("Metryx: " ++ Metryx.toString model.metryx)
+        ("First Position: " ++ FirstPosition.toString model.firstPosition)
         DropdownStateMsg
         model.dropdownState
-        (Metryx.all |> List.map (\m -> ( MetryxMsg m, Metryx.toString m )))
+        (FirstPosition.all |> List.map (\m -> ( FirstPositionMsg m, FirstPosition.toString m )))
 
 
 

@@ -49,7 +49,7 @@ update msg model =
 view : Model -> Html.Html Msg
 view model =
     Dropdown.view
-        ("Mode " ++ Mode.toString model.mode)
+        ("Mode: " ++ Mode.toString model.mode)
         DropdownStateMsg
         model.dropdownState
         (Mode.all |> List.map (\m -> ( ModeMsg m, Mode.toString m )))
