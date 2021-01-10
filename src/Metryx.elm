@@ -1,4 +1,4 @@
-module Metryx exposing (..)
+module Metryx exposing (Metryx(..), all, toString)
 
 
 type Metryx

@@ -1,17 +1,16 @@
-module Main exposing (..)
+module Main exposing (main)
 
-import Bootstrap.Button as Button
 import Bootstrap.CDN as CDN
-import Bootstrap.Dropdown as Dropdown
 import Bootstrap.Grid as Grid
-import Bootstrap.Utilities.Size as Size
+import Bootstrap.Utilities.Flex as Flex
 import Bootstrap.Utilities.Spacing as Spacing
 import Browser
 import Html
 import Html.Attributes
-import Html.Events
 import Metryx exposing (Metryx(..))
+import MetryxDropdown
 import Mode exposing (Mode(..))
+import ModeDropdown
 
 
 
@@ -19,15 +18,15 @@ import Mode exposing (Mode(..))
 
 
 type alias Model =
-    { metryxState : Dropdown.State
-    , metryx : Metryx
+    { metryx : MetryxDropdown.Model
+    , mode : ModeDropdown.Model
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { metryxState = Dropdown.initialState
-      , metryx = Metryx_3_2
+    ( { metryx = MetryxDropdown.init
+      , mode = ModeDropdown.init
       }
     , Cmd.none
     )
@@ -38,39 +37,22 @@ init =
 
 
 type Msg
-    = MetryxStateMsg Dropdown.State
-    | MetryxMsg Metryx
+    = MetryxMsg MetryxDropdown.Msg
+    | ModeMsg ModeDropdown.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        MetryxStateMsg state ->
-            ( { model | metryxState = state }, Cmd.none )
+        MetryxMsg metryxMsg ->
+            ( { model | metryx = MetryxDropdown.update metryxMsg model.metryx }, Cmd.none )
 
-        MetryxMsg metryx ->
-            ( { model | metryx = metryx }, Cmd.none )
+        ModeMsg modeMsg ->
+            ( { model | mode = ModeDropdown.update modeMsg model.mode }, Cmd.none )
 
 
 
 ---- VIEW ----
-
-
-viewDropdown : String -> (Dropdown.State -> Msg) -> Dropdown.State -> List ( Msg, String ) -> Html.Html Msg
-viewDropdown name toggleMsg state items =
-    Dropdown.dropdown
-        state
-        { options = [ Dropdown.attrs [ Size.w25 ], Dropdown.dropRight ]
-        , toggleMsg = toggleMsg
-        , toggleButton =
-            Dropdown.toggle [ Button.outlinePrimary, Button.large ] [ Html.text name ]
-        , items =
-            items
-                |> List.map
-                    (\( msg, text ) ->
-                        Dropdown.buttonItem [ Html.Events.onClick msg ] [ Html.text text ]
-                    )
-        }
 
 
 view : Model -> Browser.Document Msg
@@ -82,12 +64,10 @@ view model =
             , Grid.row []
                 [ Grid.col []
                     [ Html.h1 [] [ Html.text "Target Structure Generator" ]
-                    , Html.div [ Spacing.mt5 ]
-                        [ viewDropdown
-                            ("Metryx " ++ Metryx.toString model.metryx)
-                            MetryxStateMsg
-                            model.metryxState
-                            (Metryx.all |> List.map (\m -> ( MetryxMsg m, Metryx.toString m )))
+                    , Html.div [ Html.Attributes.class "text-muted" ] [ Html.text "Roger Treece Musical Fluency Exercise" ]
+                    , Html.div [ Flex.block, Flex.col ]
+                        [ Html.div [ Spacing.mt2 ] [ MetryxDropdown.view model.metryx |> Html.map MetryxMsg ]
+                        , Html.div [ Spacing.mt2 ] [ ModeDropdown.view model.mode |> Html.map ModeMsg ]
                         ]
                     ]
                 ]
@@ -103,7 +83,9 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Dropdown.subscriptions model.metryxState MetryxStateMsg ]
+        [ MetryxDropdown.subscriptions model.metryx |> Sub.map MetryxMsg
+        , ModeDropdown.subscriptions model.mode |> Sub.map ModeMsg
+        ]
 
 
 

@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Install crete-elm-app, and surge, then publish
+      - name: Install create-elm-app, and surge, then publish
         uses: actions/setup-node@v1
         with:
           node-version: 12

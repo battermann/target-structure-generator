@@ -1,4 +1,4 @@
-module Mode exposing (..)
+module Mode exposing (Mode(..), all, toString)
 
 
 type Mode
