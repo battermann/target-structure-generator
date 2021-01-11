@@ -16,10 +16,10 @@ type alias Model =
     }
 
 
-init : Model
-init =
+init : Mode -> Model
+init mode =
     { dropdownState = Dropdown.initialState
-    , mode = Ionian
+    , mode = mode
     }
 
 

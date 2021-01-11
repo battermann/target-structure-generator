@@ -1,20 +1,24 @@
 module Main exposing (main)
 
+import Bootstrap.Button as Button
 import Bootstrap.CDN as CDN
 import Bootstrap.Form as Form
 import Bootstrap.Grid as Grid
 import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
 import Browser
+import FirstPosition exposing (FirstPosition(..))
 import FirstPositionDropdown
 import Html
 import Html.Attributes
 import Html.Events
+import MelodicForm exposing (MelodicForm(..))
 import MelodicFormDropdown
 import Metryx exposing (Metryx(..))
 import MetryxDropdown
 import Mode exposing (Mode(..))
 import ModeDropdown
+import Random
 import Tempo exposing (Tempo)
 
 
@@ -22,21 +26,30 @@ import Tempo exposing (Tempo)
 ---- MODEL ----
 
 
+type alias Structure =
+    { metryx : Metryx
+    , tempo : Tempo
+    , mode : Mode
+    , firstPosition : FirstPosition
+    , melodicForm : MelodicForm
+    }
+
+
 type alias Model =
     { metryx : MetryxDropdown.Model
+    , tempo : Tempo
     , mode : ModeDropdown.Model
     , firstPosition : FirstPositionDropdown.Model
     , melodicForm : MelodicFormDropdown.Model
-    , tempo : Tempo
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { metryx = MetryxDropdown.init
-      , mode = ModeDropdown.init
-      , firstPosition = FirstPositionDropdown.init
-      , melodicForm = MelodicFormDropdown.init
+    ( { metryx = MetryxDropdown.init Metryx_3_2
+      , mode = ModeDropdown.init Ionian
+      , firstPosition = FirstPositionDropdown.init Open
+      , melodicForm = MelodicFormDropdown.init Period
       , tempo = Tempo.tempo Metryx_3_2 100
       }
     , Cmd.none
@@ -53,6 +66,8 @@ type Msg
     | FirstPositionMsg FirstPositionDropdown.Msg
     | MelodicFormMsg MelodicFormDropdown.Msg
     | TempoMsg String
+    | Randomize
+    | Generated Structure
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -61,7 +76,7 @@ update msg model =
         MetryxMsg metryxMsg ->
             ( { model
                 | metryx = MetryxDropdown.update metryxMsg model.metryx
-                , tempo = Tempo.tempo model.metryx.metryx (Tempo.bpm model.tempo)
+                , tempo = Tempo.tempo model.metryx.value (Tempo.bpm model.tempo)
               }
             , Cmd.none
             )
@@ -78,10 +93,41 @@ update msg model =
         TempoMsg tempoStr ->
             case String.toInt tempoStr of
                 Just tempo ->
-                    ( { model | tempo = Tempo.tempo model.metryx.metryx tempo }, Cmd.none )
+                    ( { model | tempo = Tempo.tempo model.metryx.value tempo }, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        Randomize ->
+            ( model, Random.generate Generated random )
+
+        Generated structure ->
+            ( { model
+                | metryx = MetryxDropdown.init structure.metryx
+                , mode = ModeDropdown.init structure.mode
+                , firstPosition = FirstPositionDropdown.init structure.firstPosition
+                , melodicForm = MelodicFormDropdown.init structure.melodicForm
+                , tempo = structure.tempo
+              }
+            , Cmd.none
+            )
+
+
+random : Random.Generator Structure
+random =
+    Random.map4
+        (\( metryx, tempo ) mode firstPosition melodicForm ->
+            { metryx = metryx
+            , tempo = tempo
+            , mode = mode
+            , firstPosition = firstPosition
+            , melodicForm = melodicForm
+            }
+        )
+        (Metryx.random |> Random.andThen (\m -> Tempo.random m |> Random.map (Tuple.pair m)))
+        Mode.random
+        FirstPosition.random
+        MelodicForm.random
 
 
 
@@ -92,7 +138,7 @@ viewTempo : Model -> Html.Html Msg
 viewTempo model =
     let
         ( min, max ) =
-            Tempo.range model.metryx.metryx |> Tuple.mapBoth String.fromInt String.fromInt
+            Tempo.range model.metryx.value |> Tuple.mapBoth String.fromInt String.fromInt
     in
     Form.group []
         [ Form.label [] [ Html.text ("Tempo (" ++ min ++ "-" ++ max ++ "bpm): " ++ String.fromInt (Tempo.bpm model.tempo)) ]
@@ -114,20 +160,31 @@ viewTempo model =
 
 viewForm : Model -> Html.Html Msg
 viewForm model =
-    Form.form []
-        [ Form.group []
-            [ Html.div [ Spacing.mt2 ] [ MetryxDropdown.view model.metryx |> Html.map MetryxMsg ]
+    Html.div []
+        [ Form.form []
+            [ Form.group []
+                [ Html.div [ Spacing.mt2 ] [ MetryxDropdown.view model.metryx |> Html.map MetryxMsg ]
+                ]
+            , viewTempo model
+            , Form.group []
+                [ Html.div [ Spacing.mt2 ] [ ModeDropdown.view model.mode |> Html.map ModeMsg ]
+                ]
+            , Form.group []
+                [ Html.div [ Spacing.mt2 ] [ FirstPositionDropdown.view model.firstPosition |> Html.map FirstPositionMsg ]
+                ]
+            , Form.group []
+                [ Html.div [ Spacing.mt2 ] [ MelodicFormDropdown.view model.melodicForm |> Html.map MelodicFormMsg ]
+                ]
             ]
-        , viewTempo model
-        , Form.group []
-            [ Html.div [ Spacing.mt2 ] [ ModeDropdown.view model.mode |> Html.map ModeMsg ]
+        , Button.button
+            [ Button.primary
+            , Button.attrs
+                [ Size.w100
+                , Html.Attributes.style "max-width" "300px"
+                ]
+            , Button.onClick Randomize
             ]
-        , Form.group []
-            [ Html.div [ Spacing.mt2 ] [ FirstPositionDropdown.view model.firstPosition |> Html.map FirstPositionMsg ]
-            ]
-        , Form.group []
-            [ Html.div [ Spacing.mt2 ] [ MelodicFormDropdown.view model.melodicForm |> Html.map MelodicFormMsg ]
-            ]
+            [ Html.div [] [ Html.i [ Html.Attributes.class "fas fa-random", Spacing.mr2 ] [], Html.text "RANDOMIZE" ] ]
         ]
 
 

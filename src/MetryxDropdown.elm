@@ -13,14 +13,14 @@ import Mode exposing (Mode(..))
 
 type alias Model =
     { dropdownState : Dropdown.State
-    , metryx : Metryx
+    , value : Metryx
     }
 
 
-init : Model
-init =
+init : Metryx -> Model
+init value =
     { dropdownState = Dropdown.initialState
-    , metryx = Metryx_3_2
+    , value = value
     }
 
 
@@ -39,8 +39,8 @@ update msg model =
         DropdownStateMsg state ->
             { model | dropdownState = state }
 
-        MetryxMsg metryx ->
-            { model | metryx = metryx }
+        MetryxMsg value ->
+            { model | value = value }
 
 
 
@@ -50,7 +50,7 @@ update msg model =
 view : Model -> Html.Html Msg
 view model =
     Dropdown.view
-        ("Metryx: " ++ Metryx.toString model.metryx)
+        ("Metryx: " ++ Metryx.toString model.value)
         DropdownStateMsg
         model.dropdownState
         (Metryx.all |> List.map (\m -> ( MetryxMsg m, Metryx.toString m )))

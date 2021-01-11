@@ -12,14 +12,14 @@ import Html
 
 type alias Model =
     { dropdownState : Dropdown.State
-    , firstPosition : FirstPosition
+    , value : FirstPosition
     }
 
 
-init : Model
-init =
+init : FirstPosition -> Model
+init value =
     { dropdownState = Dropdown.initialState
-    , firstPosition = Open
+    , value = value
     }
 
 
@@ -39,7 +39,7 @@ update msg model =
             { model | dropdownState = state }
 
         FirstPositionMsg metryx ->
-            { model | firstPosition = metryx }
+            { model | value = metryx }
 
 
 
@@ -49,7 +49,7 @@ update msg model =
 view : Model -> Html.Html Msg
 view model =
     Dropdown.view
-        ("First Position: " ++ FirstPosition.toString model.firstPosition)
+        ("First Position: " ++ FirstPosition.toString model.value)
         DropdownStateMsg
         model.dropdownState
         (FirstPosition.all |> List.map (\m -> ( FirstPositionMsg m, FirstPosition.toString m )))

@@ -12,14 +12,14 @@ import MelodicForm exposing (MelodicForm(..))
 
 type alias Model =
     { dropdownState : Dropdown.State
-    , melodicForm : MelodicForm
+    , value : MelodicForm
     }
 
 
-init : Model
-init =
+init : MelodicForm -> Model
+init value =
     { dropdownState = Dropdown.initialState
-    , melodicForm = Period
+    , value = value
     }
 
 
@@ -39,7 +39,7 @@ update msg model =
             { model | dropdownState = state }
 
         MelodicFormMsg metryx ->
-            { model | melodicForm = metryx }
+            { model | value = metryx }
 
 
 
@@ -49,7 +49,7 @@ update msg model =
 view : Model -> Html.Html Msg
 view model =
     Dropdown.view
-        ("Melodic Form: " ++ MelodicForm.toString model.melodicForm)
+        ("Melodic Form: " ++ MelodicForm.toString model.value)
         DropdownStateMsg
         model.dropdownState
         (MelodicForm.all |> List.map (\m -> ( MelodicFormMsg m, MelodicForm.toString m )))
