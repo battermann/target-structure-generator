@@ -1,0 +1,25 @@
+{
+  "name": "tsgen",
+  "version": "1.0.0",
+  "description": "[Demo](https://target-structure-generator.surge.sh/)",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/battermann/target-structure-generator.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/battermann/target-structure-generator/issues"
+  },
+  "homepage": "https://github.com/battermann/target-structure-generator#readme",
+  "dependencies": {
+    "tone": "^14.7.77"
+  }
+}
