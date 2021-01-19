@@ -4,6 +4,7 @@ import Bootstrap.Button as Button
 import Bootstrap.CDN as CDN
 import Bootstrap.Form as Form
 import Bootstrap.Grid as Grid
+import Bootstrap.Utilities.Flex as Flex
 import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
 import Browser
@@ -35,12 +36,18 @@ type alias Structure =
     }
 
 
+type Click
+    = Play
+    | Pause
+
+
 type alias Model =
     { metryx : MetryxDropdown.Model
     , tempo : Tempo
     , mode : ModeDropdown.Model
     , firstPosition : FirstPositionDropdown.Model
     , melodicForm : MelodicFormDropdown.Model
+    , click : Click
     }
 
 
@@ -51,6 +58,7 @@ init =
       , firstPosition = FirstPositionDropdown.init Open
       , melodicForm = MelodicFormDropdown.init Period
       , tempo = Tempo.tempo Metryx_3_2 100
+      , click = Pause
       }
     , Cmd.none
     )
@@ -68,6 +76,7 @@ type Msg
     | TempoMsg String
     | Randomize
     | Generated Structure
+    | ToggleClick
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -111,6 +120,14 @@ update msg model =
               }
             , Cmd.none
             )
+
+        ToggleClick ->
+            case model.click of
+                Pause ->
+                    ( { model | click = Play }, Cmd.none )
+
+                Play ->
+                    ( { model | click = Pause }, Cmd.none )
 
 
 random : Random.Generator Structure
@@ -158,6 +175,16 @@ viewTempo model =
         ]
 
 
+viewClickButtonIcon : Click -> Html.Attribute msg
+viewClickButtonIcon click =
+    case click of
+        Pause ->
+            Html.Attributes.class "fas fa-play"
+
+        Play ->
+            Html.Attributes.class "fas fa-pause"
+
+
 viewForm : Model -> Html.Html Msg
 viewForm model =
     Html.div []
@@ -176,15 +203,26 @@ viewForm model =
                 [ Html.div [ Spacing.mt2 ] [ MelodicFormDropdown.view model.melodicForm |> Html.map MelodicFormMsg ]
                 ]
             ]
-        , Button.button
-            [ Button.primary
-            , Button.attrs
-                [ Size.w100
-                , Html.Attributes.style "max-width" "300px"
-                ]
-            , Button.onClick Randomize
+        , Html.div
+            [ Size.w100
+            , Html.Attributes.style "max-width" "300px"
+            , Flex.block
+            , Flex.row
+            , Flex.justifyBetween
             ]
-            [ Html.div [] [ Html.i [ Html.Attributes.class "fas fa-random", Spacing.mr2 ] [], Html.text "RANDOMIZE" ] ]
+            [ Button.button
+                [ Button.primary
+                , Button.onClick Randomize
+                , Button.attrs [ Size.w100, Spacing.mr2 ]
+                ]
+                [ Html.div [] [ Html.i [ Html.Attributes.class "fas fa-random", Spacing.mr2 ] [], Html.text "RANDOMIZE" ] ]
+            , Button.button
+                [ Button.success
+                , Button.onClick ToggleClick
+                , Button.attrs [ Html.Attributes.style "min-width" "100px" ]
+                ]
+                [ Html.div [] [ Html.i [ viewClickButtonIcon model.click, Spacing.mr2 ] [], Html.text "CLICK" ] ]
+            ]
         ]
 
 
