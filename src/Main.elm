@@ -19,6 +19,7 @@ import Metryx exposing (Metryx(..))
 import MetryxDropdown
 import Mode exposing (Mode(..))
 import ModeDropdown
+import Ports
 import Random
 import Tempo exposing (Tempo)
 
@@ -124,10 +125,10 @@ update msg model =
         ToggleClick ->
             case model.click of
                 Pause ->
-                    ( { model | click = Play }, Cmd.none )
+                    ( { model | click = Play }, Ports.startMetronome (Tempo.bpm model.tempo) )
 
                 Play ->
-                    ( { model | click = Pause }, Cmd.none )
+                    ( { model | click = Pause }, Ports.stopMetronome () )
 
 
 random : Random.Generator Structure
