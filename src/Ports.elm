@@ -1,7 +1,13 @@
-port module Ports exposing (startMetronome, stopMetronome)
+port module Ports exposing (setBeats, setBpm, startMetronome, stopMetronome)
 
 
-port startMetronome : Int -> Cmd msg
+port startMetronome : () -> Cmd msg
 
 
 port stopMetronome : () -> Cmd msg
+
+
+port setBpm : Int -> Cmd msg
+
+
+port setBeats : Int -> Cmd msg
