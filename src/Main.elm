@@ -21,7 +21,7 @@ import Mode exposing (Mode(..))
 import ModeDropdown
 import Ports
 import Random
-import Tempo exposing (Tempo)
+import Tempo exposing (Tempo, tempo)
 
 
 
@@ -84,11 +84,18 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         MetryxMsg metryxMsg ->
+            let
+                metryx =
+                    MetryxDropdown.update metryxMsg model.metryx
+
+                tempo =
+                    Tempo.tempo model.metryx.value (Tempo.bpm model.tempo)
+            in
             ( { model
-                | metryx = MetryxDropdown.update metryxMsg model.metryx
-                , tempo = Tempo.tempo model.metryx.value (Tempo.bpm model.tempo)
+                | metryx = metryx
+                , tempo = tempo
               }
-            , Cmd.none
+            , Cmd.batch [ metryx.value |> Metryx.beats |> Ports.setBeats, tempo |> Tempo.bpm |> Ports.setBpm ]
             )
 
         ModeMsg modeMsg ->
@@ -103,7 +110,7 @@ update msg model =
         TempoMsg tempoStr ->
             case String.toInt tempoStr of
                 Just tempo ->
-                    ( { model | tempo = Tempo.tempo model.metryx.value tempo }, Cmd.none )
+                    ( { model | tempo = Tempo.tempo model.metryx.value tempo }, tempo |> Tempo.tempo model.metryx.value |> Tempo.bpm |> Ports.setBpm )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -119,13 +126,13 @@ update msg model =
                 , melodicForm = MelodicFormDropdown.init structure.melodicForm
                 , tempo = structure.tempo
               }
-            , Cmd.none
+            , Cmd.batch [ structure.metryx |> Metryx.beats |> Ports.setBeats, structure.tempo |> Tempo.bpm |> Ports.setBpm ]
             )
 
         ToggleClick ->
             case model.click of
                 Pause ->
-                    ( { model | click = Play }, Ports.startMetronome (Tempo.bpm model.tempo) )
+                    ( { model | click = Play }, Ports.startMetronome () )
 
                 Play ->
                     ( { model | click = Pause }, Ports.stopMetronome () )
