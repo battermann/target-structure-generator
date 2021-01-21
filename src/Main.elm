@@ -61,7 +61,7 @@ init =
       , tempo = Tempo.tempo Metryx_3_2 100
       , click = Pause
       }
-    , Cmd.none
+    , Cmd.batch [ Metryx_3_2 |> Metryx.beats |> Ports.setBeats, 100 |> Tempo.tempo Metryx_3_2 |> Tempo.bpm |> Ports.setBpm ]
     )
 
 
