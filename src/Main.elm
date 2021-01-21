@@ -190,7 +190,7 @@ viewClickButtonIcon click =
             Html.Attributes.class "fas fa-play"
 
         Play ->
-            Html.Attributes.class "fas fa-pause"
+            Html.Attributes.class "fas fa-stop"
 
 
 viewForm : Model -> Html.Html Msg

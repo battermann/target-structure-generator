@@ -18,6 +18,7 @@ jobs:
           node-version: 12
 
       - run: npm install -g create-elm-app
+      - run: npm install --production
       - run: elm-app build
       - run: npm install -g surge
       - run: surge ./build/ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
