@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/battermann/target-structure-generator#readme",
   "dependencies": {
-    "tone": "^14.7.77"
+    "tone": "^14.7.77",
+    "unmute-ios-audio": "^3.3.0"
   }
 }
