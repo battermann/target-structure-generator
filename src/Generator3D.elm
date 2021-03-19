@@ -228,9 +228,6 @@ view model =
                 ]
                 [ Html.div [] [ Html.i [ viewClickButtonIcon model.click, Spacing.mr2 ] [], Html.text "CLICK" ] ]
             ]
-        , Button.linkButton
-            [ Button.roleLink, Button.attrs [ Size.w100, Html.Attributes.style "max-width" "300px", Html.Attributes.href "https://github.com/battermann/target-structure-generator" ] ]
-            [ Html.i [ Html.Attributes.class "fab fa-github" ] [], Html.text " Source Code" ]
         ]
 
 
