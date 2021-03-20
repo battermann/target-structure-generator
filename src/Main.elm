@@ -7,6 +7,7 @@ import Bootstrap.Tab as Tab
 import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
 import Browser
+import ConfigurationGenerator
 import FirstPosition exposing (FirstPosition(..))
 import Generator3D
 import Html
@@ -22,20 +23,29 @@ import Mode exposing (Mode(..))
 
 type alias Model =
     { generator3D : Generator3D.Model
+    , generatorConfig : ConfigurationGenerator.Model
     , tabState : Tab.State
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    Generator3D.init
-        |> Tuple.mapBoth
-            (\m ->
-                { generator3D = m
-                , tabState = Tab.initialState
-                }
-            )
-            (Cmd.map Generator3DMsg)
+    let
+        ( gen3dModel, generator3dCmd ) =
+            Generator3D.init
+
+        ( generatorConfigModel, generatorConfigCmd ) =
+            ConfigurationGenerator.init
+    in
+    ( { generator3D = gen3dModel
+      , generatorConfig = generatorConfigModel
+      , tabState = Tab.initialState
+      }
+    , Cmd.batch
+        [ generator3dCmd |> Cmd.map Generator3DMsg
+        , generatorConfigCmd |> Cmd.map GeneratorConfigMsg
+        ]
+    )
 
 
 
@@ -44,6 +54,7 @@ init =
 
 type Msg
     = Generator3DMsg Generator3D.Msg
+    | GeneratorConfigMsg ConfigurationGenerator.Msg
     | TabMsg Tab.State
 
 
@@ -53,6 +64,10 @@ update msg model =
         Generator3DMsg subMsg ->
             Generator3D.update subMsg model.generator3D
                 |> Tuple.mapBoth (\m -> { model | generator3D = m }) (Cmd.map Generator3DMsg)
+
+        GeneratorConfigMsg subMsg ->
+            ConfigurationGenerator.update subMsg model.generatorConfig
+                |> Tuple.mapBoth (\m -> { model | generatorConfig = m }) (Cmd.map GeneratorConfigMsg)
 
         TabMsg state ->
             ( { model | tabState = state }
@@ -70,10 +85,17 @@ viewTabs model =
         |> Tab.items
             [ Tab.item
                 { id = "generator3d"
-                , link = Tab.link [] [ Html.text "3-D Generator" ]
+                , link = Tab.link [] [ Html.text "3-D Exercise Generator" ]
                 , pane =
                     Tab.pane [ Spacing.mt3 ]
                         [ Generator3D.view model.generator3D |> Html.map Generator3DMsg ]
+                }
+            , Tab.item
+                { id = "configurations-generator"
+                , link = Tab.link [] [ Html.text "Configurations Generator" ]
+                , pane =
+                    Tab.pane [ Spacing.mt3 ]
+                        [ ConfigurationGenerator.view model.generatorConfig |> Html.map GeneratorConfigMsg ]
                 }
             ]
         |> Tab.view model.tabState
@@ -106,7 +128,9 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Generator3D.subscriptions model.generator3D |> Sub.map Generator3DMsg ]
+        [ Generator3D.subscriptions model.generator3D |> Sub.map Generator3DMsg
+        , ConfigurationGenerator.subscriptions model.generatorConfig |> Sub.map GeneratorConfigMsg
+        ]
 
 
 

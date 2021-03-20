@@ -1,9 +1,9 @@
-module ModeDropdown exposing (Model, Msg, init, subscriptions, update, view)
+module CoupletPhraseDropdown exposing (Model, Msg, init, subscriptions, update, view)
 
 import Bootstrap.Dropdown as Dropdown
+import CoupletPhrase exposing (CoupletPhrase(..))
 import Dropdown
 import Html
-import Mode exposing (Mode(..))
 
 
 
@@ -12,14 +12,14 @@ import Mode exposing (Mode(..))
 
 type alias Model =
     { dropdownState : Dropdown.State
-    , mode : Mode
+    , coupletPhrase : CoupletPhrase
     }
 
 
-init : Mode -> Model
-init mode =
+init : CoupletPhrase -> Model
+init coupletPhrase =
     { dropdownState = Dropdown.initialState
-    , mode = mode
+    , coupletPhrase = coupletPhrase
     }
 
 
@@ -29,7 +29,7 @@ init mode =
 
 type Msg
     = DropdownStateMsg Dropdown.State
-    | ModeMsg Mode
+    | CoupletPhraseMsg CoupletPhrase
 
 
 update : Msg -> Model -> Model
@@ -38,8 +38,8 @@ update msg model =
         DropdownStateMsg state ->
             { model | dropdownState = state }
 
-        ModeMsg mode ->
-            { model | mode = mode }
+        CoupletPhraseMsg coupletPhrase ->
+            { model | coupletPhrase = coupletPhrase }
 
 
 
@@ -49,10 +49,10 @@ update msg model =
 view : Model -> Html.Html Msg
 view model =
     Dropdown.view
-        ("Mode: " ++ Mode.toString model.mode)
+        ("Couplet Phrase: " ++ CoupletPhrase.toString model.coupletPhrase)
         DropdownStateMsg
         model.dropdownState
-        (Mode.all |> List.map (\m -> ( ModeMsg m, Mode.toString m )))
+        (CoupletPhrase.all |> List.map (\cp -> ( CoupletPhraseMsg cp, CoupletPhrase.toString cp )))
 
 
 
