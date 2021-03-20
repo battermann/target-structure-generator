@@ -45,13 +45,13 @@ update msg model =
 ---- VIEW ----
 
 
-view : String -> List a -> (a -> String) -> Model a -> Html.Html (Msg a)
-view name all toString value =
+view : Html.Html (Msg a) -> List a -> (a -> Html.Html (Msg a)) -> Model a -> Html.Html (Msg a)
+view label all toHtml value =
     Dropdown.View.view
-        (name ++ ": " ++ toString value.value)
+        label
         DropdownStateMsg
         value.dropdownState
-        (all |> List.map (\m -> ( ModeMsg m, toString m )))
+        (all |> List.map (\m -> ( ModeMsg m, toHtml m )))
 
 
 
