@@ -1,4 +1,4 @@
-module Metryx exposing (Metryx(..), all, beats, random, toString, tuple)
+module Models.Metryx exposing (Metryx(..), all, beats, random, toString, tuple)
 
 import Random
 
@@ -72,7 +72,18 @@ toString metryx =
 
 random : Random.Generator Metryx
 random =
-    Random.uniform Metryx_3_2 all
+    Random.uniform Metryx_3_2
+        [ Metryx_3_3
+        , Metryx_3_4
+        , Metryx_4_2
+        , Metryx_4_3
+        , Metryx_4_4
+        , Metryx_5_2
+        , Metryx_5_3
+        , Metryx_5_4
+        , Metryx_6_2
+        , Metryx_7_2
+        ]
 
 
 tuple : Metryx -> ( Int, Int )

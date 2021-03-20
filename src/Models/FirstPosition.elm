@@ -1,4 +1,4 @@
-module FirstPosition exposing (FirstPosition(..), all, random, toString)
+module Models.FirstPosition exposing (FirstPosition(..), all, random, toString)
 
 import Random
 
@@ -25,4 +25,4 @@ toString firstPosition =
 
 random : Random.Generator FirstPosition
 random =
-    Random.uniform Open all
+    Random.uniform Open [ Closed ]

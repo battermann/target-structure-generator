@@ -5,20 +5,17 @@ import Bootstrap.Form as Form
 import Bootstrap.Utilities.Flex as Flex
 import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
-import FirstPosition exposing (FirstPosition(..))
-import FirstPositionDropdown
+import Dropdown.Dropdown as Dropdown
 import Html
 import Html.Attributes
 import Html.Events
-import MelodicForm exposing (MelodicForm(..))
-import MelodicFormDropdown
-import Metryx exposing (Metryx(..))
-import MetryxDropdown
-import Mode exposing (Mode(..))
-import ModeDropdown
+import Models.FirstPosition as FirstPosition exposing (FirstPosition(..))
+import Models.MelodicForm as MelodicForm exposing (MelodicForm(..))
+import Models.Metryx as Metryx exposing (Metryx(..))
+import Models.Mode as Mode exposing (Mode(..))
+import Models.Tempo as Tempo exposing (Tempo, tempo)
 import Ports
 import Random
-import Tempo exposing (Tempo, tempo)
 
 
 
@@ -40,21 +37,21 @@ type Click
 
 
 type alias Model =
-    { metryx : MetryxDropdown.Model
+    { metryx : Dropdown.Model Metryx
     , tempo : Tempo
-    , mode : ModeDropdown.Model
-    , firstPosition : FirstPositionDropdown.Model
-    , melodicForm : MelodicFormDropdown.Model
+    , mode : Dropdown.Model Mode
+    , firstPosition : Dropdown.Model FirstPosition
+    , melodicForm : Dropdown.Model MelodicForm
     , click : Click
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { metryx = MetryxDropdown.init Metryx_3_2
-      , mode = ModeDropdown.init Ionian
-      , firstPosition = FirstPositionDropdown.init Open
-      , melodicForm = MelodicFormDropdown.init Period
+    ( { metryx = Dropdown.init Metryx_3_2
+      , mode = Dropdown.init Ionian
+      , firstPosition = Dropdown.init Open
+      , melodicForm = Dropdown.init Period
       , tempo = Tempo.tempo Metryx_3_2 100
       , click = Pause
       }
@@ -67,10 +64,10 @@ init =
 
 
 type Msg
-    = MetryxMsg MetryxDropdown.Msg
-    | ModeMsg ModeDropdown.Msg
-    | FirstPositionMsg FirstPositionDropdown.Msg
-    | MelodicFormMsg MelodicFormDropdown.Msg
+    = MetryxMsg (Dropdown.Msg Metryx)
+    | ModeMsg (Dropdown.Msg Mode)
+    | FirstPositionMsg (Dropdown.Msg FirstPosition)
+    | MelodicFormMsg (Dropdown.Msg MelodicForm)
     | TempoMsg String
     | Randomize
     | Generated Structure
@@ -83,7 +80,7 @@ update msg model =
         MetryxMsg metryxMsg ->
             let
                 metryx =
-                    MetryxDropdown.update metryxMsg model.metryx
+                    Dropdown.update metryxMsg model.metryx
 
                 tempo =
                     Tempo.tempo model.metryx.value (Tempo.bpm model.tempo)
@@ -96,13 +93,13 @@ update msg model =
             )
 
         ModeMsg modeMsg ->
-            ( { model | mode = ModeDropdown.update modeMsg model.mode }, Cmd.none )
+            ( { model | mode = Dropdown.update modeMsg model.mode }, Cmd.none )
 
         FirstPositionMsg firstPositionMsg ->
-            ( { model | firstPosition = FirstPositionDropdown.update firstPositionMsg model.firstPosition }, Cmd.none )
+            ( { model | firstPosition = Dropdown.update firstPositionMsg model.firstPosition }, Cmd.none )
 
         MelodicFormMsg melodicFormMsg ->
-            ( { model | melodicForm = MelodicFormDropdown.update melodicFormMsg model.melodicForm }, Cmd.none )
+            ( { model | melodicForm = Dropdown.update melodicFormMsg model.melodicForm }, Cmd.none )
 
         TempoMsg tempoStr ->
             case String.toInt tempoStr of
@@ -117,10 +114,10 @@ update msg model =
 
         Generated structure ->
             ( { model
-                | metryx = MetryxDropdown.init structure.metryx
-                , mode = ModeDropdown.init structure.mode
-                , firstPosition = FirstPositionDropdown.init structure.firstPosition
-                , melodicForm = MelodicFormDropdown.init structure.melodicForm
+                | metryx = Dropdown.init structure.metryx
+                , mode = Dropdown.init structure.mode
+                , firstPosition = Dropdown.init structure.firstPosition
+                , melodicForm = Dropdown.init structure.melodicForm
                 , tempo = structure.tempo
               }
             , Cmd.batch [ structure.metryx |> Metryx.beats |> Ports.setBeats, structure.tempo |> Tempo.bpm |> Ports.setBpm ]
@@ -195,17 +192,17 @@ view model =
     Html.div []
         [ Form.form []
             [ Form.group []
-                [ Html.div [ Spacing.mt2 ] [ MetryxDropdown.view model.metryx |> Html.map MetryxMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "Metryx" Metryx.all Metryx.toString model.metryx |> Html.map MetryxMsg ]
                 ]
             , viewTempo model
             , Form.group []
-                [ Html.div [ Spacing.mt2 ] [ ModeDropdown.view model.mode |> Html.map ModeMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "Mode" Mode.all Mode.toString model.mode |> Html.map ModeMsg ]
                 ]
             , Form.group []
-                [ Html.div [ Spacing.mt2 ] [ FirstPositionDropdown.view model.firstPosition |> Html.map FirstPositionMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "First Position" FirstPosition.all FirstPosition.toString model.firstPosition |> Html.map FirstPositionMsg ]
                 ]
             , Form.group []
-                [ Html.div [ Spacing.mt2 ] [ MelodicFormDropdown.view model.melodicForm |> Html.map MelodicFormMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "Melodic Form" MelodicForm.all MelodicForm.toString model.melodicForm |> Html.map MelodicFormMsg ]
                 ]
             ]
         , Html.div
@@ -238,8 +235,8 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ MetryxDropdown.subscriptions model.metryx |> Sub.map MetryxMsg
-        , ModeDropdown.subscriptions model.mode |> Sub.map ModeMsg
-        , FirstPositionDropdown.subscriptions model.firstPosition |> Sub.map FirstPositionMsg
-        , MelodicFormDropdown.subscriptions model.melodicForm |> Sub.map MelodicFormMsg
+        [ Dropdown.subscriptions model.metryx |> Sub.map MetryxMsg
+        , Dropdown.subscriptions model.mode |> Sub.map ModeMsg
+        , Dropdown.subscriptions model.firstPosition |> Sub.map FirstPositionMsg
+        , Dropdown.subscriptions model.melodicForm |> Sub.map MelodicFormMsg
         ]
