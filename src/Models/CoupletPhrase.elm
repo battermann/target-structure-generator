@@ -1,4 +1,4 @@
-module CoupletPhrase exposing (CoupletPhrase(..), all, random, toString)
+module Models.CoupletPhrase exposing (CoupletPhrase(..), all, random, toString)
 
 import Random
 
@@ -62,4 +62,13 @@ toString coupletPhrase =
 
 random : Random.Generator CoupletPhrase
 random =
-    Random.uniform AB all
+    Random.uniform AB
+        [ ABAB
+        , AABB
+        , AAAB
+        , ABBB
+        , BABA
+        , BBAA
+        , AAB
+        , ABB
+        ]

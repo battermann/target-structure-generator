@@ -8,13 +8,9 @@ import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
 import Browser
 import ConfigurationGenerator
-import FirstPosition exposing (FirstPosition(..))
 import Generator3D
 import Html
 import Html.Attributes
-import MelodicForm exposing (MelodicForm(..))
-import Metryx exposing (Metryx(..))
-import Mode exposing (Mode(..))
 
 
 

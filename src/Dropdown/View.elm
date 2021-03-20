@@ -1,4 +1,4 @@
-module Dropdown exposing (view)
+module Dropdown.View exposing (view)
 
 import Bootstrap.Button as Button
 import Bootstrap.Dropdown as Dropdown
@@ -6,8 +6,6 @@ import Bootstrap.Utilities.Size as Size
 import Html
 import Html.Attributes
 import Html.Events
-import Metryx exposing (Metryx(..))
-import Mode exposing (Mode(..))
 
 
 view : String -> (Dropdown.State -> msg) -> Dropdown.State -> List ( msg, String ) -> Html.Html msg

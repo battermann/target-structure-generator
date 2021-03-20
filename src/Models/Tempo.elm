@@ -1,6 +1,6 @@
-module Tempo exposing (Tempo, bpm, random, range, tempo)
+module Models.Tempo exposing (Tempo, bpm, random, range, tempo)
 
-import Metryx exposing (Metryx(..))
+import Models.Metryx exposing (Metryx(..))
 import Random
 
 

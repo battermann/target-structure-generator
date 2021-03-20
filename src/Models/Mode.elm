@@ -1,4 +1,4 @@
-module Mode exposing (Mode(..), all, random, toString)
+module Models.Mode exposing (Mode(..), all, random, toString)
 
 import Random
 
@@ -47,4 +47,10 @@ toString mode =
 
 random : Random.Generator Mode
 random =
-    Random.uniform Ionian all
+    Random.uniform Ionian
+        [ Dorian
+        , Phrygian
+        , Lydian
+        , Mixolydian
+        , Aeolian
+        ]

@@ -5,18 +5,16 @@ import Bootstrap.Form as Form
 import Bootstrap.Utilities.Flex as Flex
 import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
-import CoupletPhrase exposing (CoupletPhrase(..))
-import CoupletPhraseDropdown
+import Dropdown.Dropdown as Dropdown
 import Html
 import Html.Attributes
 import Html.Events
-import Metryx exposing (Metryx(..))
-import MetryxDropdown
-import Mode exposing (Mode(..))
-import ModeDropdown
+import Models.CoupletPhrase as CoupletPhrase exposing (CoupletPhrase(..))
+import Models.Metryx as Metryx exposing (Metryx(..))
+import Models.Mode as Mode exposing (Mode(..))
+import Models.Tempo as Tempo exposing (Tempo, tempo)
 import Ports
 import Random
-import Tempo exposing (Tempo, tempo)
 
 
 
@@ -37,19 +35,19 @@ type Click
 
 
 type alias Model =
-    { metryx : MetryxDropdown.Model
+    { metryx : Dropdown.Model Metryx
     , tempo : Tempo
-    , mode : ModeDropdown.Model
-    , coupletPhrase : CoupletPhraseDropdown.Model
+    , mode : Dropdown.Model Mode
+    , coupletPhrase : Dropdown.Model CoupletPhrase
     , click : Click
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { metryx = MetryxDropdown.init Metryx_3_2
-      , mode = ModeDropdown.init Ionian
-      , coupletPhrase = CoupletPhraseDropdown.init AB
+    ( { metryx = Dropdown.init Metryx_3_2
+      , mode = Dropdown.init Ionian
+      , coupletPhrase = Dropdown.init AB
       , tempo = Tempo.tempo Metryx_3_2 100
       , click = Pause
       }
@@ -62,9 +60,9 @@ init =
 
 
 type Msg
-    = MetryxMsg MetryxDropdown.Msg
-    | ModeMsg ModeDropdown.Msg
-    | CoupletPhraseMsg CoupletPhraseDropdown.Msg
+    = MetryxMsg (Dropdown.Msg Metryx)
+    | ModeMsg (Dropdown.Msg Mode)
+    | CoupletPhraseMsg (Dropdown.Msg CoupletPhrase)
     | TempoMsg String
     | Randomize
     | Generated Structure
@@ -77,7 +75,7 @@ update msg model =
         MetryxMsg metryxMsg ->
             let
                 metryx =
-                    MetryxDropdown.update metryxMsg model.metryx
+                    Dropdown.update metryxMsg model.metryx
 
                 tempo =
                     Tempo.tempo model.metryx.value (Tempo.bpm model.tempo)
@@ -90,10 +88,10 @@ update msg model =
             )
 
         ModeMsg modeMsg ->
-            ( { model | mode = ModeDropdown.update modeMsg model.mode }, Cmd.none )
+            ( { model | mode = Dropdown.update modeMsg model.mode }, Cmd.none )
 
         CoupletPhraseMsg coupletPhraseMsg ->
-            ( { model | coupletPhrase = CoupletPhraseDropdown.update coupletPhraseMsg model.coupletPhrase }, Cmd.none )
+            ( { model | coupletPhrase = Dropdown.update coupletPhraseMsg model.coupletPhrase }, Cmd.none )
 
         TempoMsg tempoStr ->
             case String.toInt tempoStr of
@@ -108,10 +106,10 @@ update msg model =
 
         Generated structure ->
             ( { model
-                | metryx = MetryxDropdown.init structure.metryx
-                , mode = ModeDropdown.init structure.mode
+                | metryx = Dropdown.init structure.metryx
+                , mode = Dropdown.init structure.mode
                 , tempo = structure.tempo
-                , coupletPhrase = CoupletPhraseDropdown.init structure.coupletPhrase
+                , coupletPhrase = Dropdown.init structure.coupletPhrase
               }
             , Cmd.batch [ structure.metryx |> Metryx.beats |> Ports.setBeats, structure.tempo |> Tempo.bpm |> Ports.setBpm ]
             )
@@ -183,14 +181,14 @@ view model =
     Html.div []
         [ Form.form []
             [ Form.group []
-                [ Html.div [ Spacing.mt2 ] [ MetryxDropdown.view model.metryx |> Html.map MetryxMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "Metryx" Metryx.all Metryx.toString model.metryx |> Html.map MetryxMsg ]
                 ]
             , viewTempo model
             , Form.group []
-                [ Html.div [ Spacing.mt2 ] [ ModeDropdown.view model.mode |> Html.map ModeMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "Mode" Mode.all Mode.toString model.mode |> Html.map ModeMsg ]
                 ]
             , Form.group []
-                [ Html.div [ Spacing.mt2 ] [ CoupletPhraseDropdown.view model.coupletPhrase |> Html.map CoupletPhraseMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "Couplet Phrase" CoupletPhrase.all CoupletPhrase.toString model.coupletPhrase |> Html.map CoupletPhraseMsg ]
                 ]
             ]
         , Html.div
@@ -223,7 +221,7 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ MetryxDropdown.subscriptions model.metryx |> Sub.map MetryxMsg
-        , ModeDropdown.subscriptions model.mode |> Sub.map ModeMsg
-        , CoupletPhraseDropdown.subscriptions model.coupletPhrase |> Sub.map CoupletPhraseMsg
+        [ Dropdown.subscriptions model.metryx |> Sub.map MetryxMsg
+        , Dropdown.subscriptions model.mode |> Sub.map ModeMsg
+        , Dropdown.subscriptions model.coupletPhrase |> Sub.map CoupletPhraseMsg
         ]

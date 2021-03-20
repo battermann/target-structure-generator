@@ -1,4 +1,4 @@
-module MelodicForm exposing (MelodicForm(..), all, random, toString)
+module Models.MelodicForm exposing (MelodicForm(..), all, random, toString)
 
 import Random
 
@@ -25,4 +25,4 @@ toString melodicForm =
 
 random : Random.Generator MelodicForm
 random =
-    Random.uniform Period all
+    Random.uniform Period [ Sequence ]
