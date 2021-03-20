@@ -37,7 +37,7 @@ all =
 
 render : List String -> List String
 render =
-    List.map2 Tuple.pair [ "L1", "L2", "L3", "L4" ] >> List.map (\( a, b ) -> a ++ " " ++ b)
+    List.map2 Tuple.pair [ "L4", "L3", "L2", "L1" ] >> List.map (\( a, b ) -> a ++ " " ++ b)
 
 
 toMultiLineString : Configuration -> List String
