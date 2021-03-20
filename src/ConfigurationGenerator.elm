@@ -9,6 +9,7 @@ import Dropdown.Dropdown as Dropdown
 import Html
 import Html.Attributes
 import Html.Events
+import Models.Configuration as Configuration exposing (Configuration(..))
 import Models.CoupletPhrase as CoupletPhrase exposing (CoupletPhrase(..))
 import Models.Metryx as Metryx exposing (Metryx(..))
 import Models.Mode as Mode exposing (Mode(..))
@@ -26,6 +27,7 @@ type alias Structure =
     , tempo : Tempo
     , mode : Mode
     , coupletPhrase : CoupletPhrase
+    , configuration : Configuration
     }
 
 
@@ -39,6 +41,7 @@ type alias Model =
     , tempo : Tempo
     , mode : Dropdown.Model Mode
     , coupletPhrase : Dropdown.Model CoupletPhrase
+    , configuration : Dropdown.Model Configuration
     , click : Click
     }
 
@@ -49,6 +52,7 @@ init =
       , mode = Dropdown.init Ionian
       , coupletPhrase = Dropdown.init AB
       , tempo = Tempo.tempo Metryx_3_2 100
+      , configuration = Dropdown.init MelodyMotifMotorAnchor
       , click = Pause
       }
     , Cmd.batch [ Metryx_3_2 |> Metryx.beats |> Ports.setBeats, 100 |> Tempo.tempo Metryx_3_2 |> Tempo.bpm |> Ports.setBpm ]
@@ -63,6 +67,7 @@ type Msg
     = MetryxMsg (Dropdown.Msg Metryx)
     | ModeMsg (Dropdown.Msg Mode)
     | CoupletPhraseMsg (Dropdown.Msg CoupletPhrase)
+    | ConfigurationMsg (Dropdown.Msg Configuration)
     | TempoMsg String
     | Randomize
     | Generated Structure
@@ -90,6 +95,9 @@ update msg model =
         ModeMsg modeMsg ->
             ( { model | mode = Dropdown.update modeMsg model.mode }, Cmd.none )
 
+        ConfigurationMsg configMsg ->
+            ( { model | configuration = Dropdown.update configMsg model.configuration }, Cmd.none )
+
         CoupletPhraseMsg coupletPhraseMsg ->
             ( { model | coupletPhrase = Dropdown.update coupletPhraseMsg model.coupletPhrase }, Cmd.none )
 
@@ -110,6 +118,7 @@ update msg model =
                 , mode = Dropdown.init structure.mode
                 , tempo = structure.tempo
                 , coupletPhrase = Dropdown.init structure.coupletPhrase
+                , configuration = Dropdown.init structure.configuration
               }
             , Cmd.batch [ structure.metryx |> Metryx.beats |> Ports.setBeats, structure.tempo |> Tempo.bpm |> Ports.setBpm ]
             )
@@ -125,17 +134,19 @@ update msg model =
 
 random : Random.Generator Structure
 random =
-    Random.map3
-        (\( metryx, tempo ) mode coupletPhrase ->
+    Random.map4
+        (\( metryx, tempo ) mode coupletPhrase configuration ->
             { metryx = metryx
             , tempo = tempo
             , mode = mode
             , coupletPhrase = coupletPhrase
+            , configuration = configuration
             }
         )
         (Metryx.random |> Random.andThen (\m -> Tempo.random m |> Random.map (Tuple.pair m)))
         Mode.random
         CoupletPhrase.random
+        Configuration.random
 
 
 
@@ -176,19 +187,34 @@ viewClickButtonIcon click =
             Html.Attributes.class "fas fa-stop"
 
 
+viewConfiguration : Configuration -> Html.Html msg
+viewConfiguration configuration =
+    Html.div [] (Configuration.toMultiLineString configuration |> List.map (\t -> Html.div [] [ Html.text t ]) |> List.singleton |> List.map (Html.p []))
+
+
 view : Model -> Html.Html Msg
 view model =
     Html.div []
         [ Form.form []
             [ Form.group []
-                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "Metryx" Metryx.all Metryx.toString model.metryx |> Html.map MetryxMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view (Html.text ("Metryx: " ++ Metryx.toString model.metryx.value)) Metryx.all (Metryx.toString >> Html.text) model.metryx |> Html.map MetryxMsg ]
                 ]
             , viewTempo model
             , Form.group []
-                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "Mode" Mode.all Mode.toString model.mode |> Html.map ModeMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view (Html.text ("Mode: " ++ Mode.toString model.mode.value)) Mode.all (Mode.toString >> Html.text) model.mode |> Html.map ModeMsg ]
                 ]
             , Form.group []
-                [ Html.div [ Spacing.mt2 ] [ Dropdown.view "Couplet Phrase" CoupletPhrase.all CoupletPhrase.toString model.coupletPhrase |> Html.map CoupletPhraseMsg ]
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view (Html.text ("Couplet Phrase: " ++ CoupletPhrase.toString model.coupletPhrase.value)) CoupletPhrase.all (CoupletPhrase.toString >> Html.text) model.coupletPhrase |> Html.map CoupletPhraseMsg ]
+                ]
+            , Form.group []
+                [ Html.div [ Spacing.mt2 ]
+                    [ Dropdown.view
+                        (Html.div [] [ Html.text "Configuration:", viewConfiguration model.configuration.value ])
+                        Configuration.all
+                        viewConfiguration
+                        model.configuration
+                        |> Html.map ConfigurationMsg
+                    ]
                 ]
             ]
         , Html.div
@@ -224,4 +250,5 @@ subscriptions model =
         [ Dropdown.subscriptions model.metryx |> Sub.map MetryxMsg
         , Dropdown.subscriptions model.mode |> Sub.map ModeMsg
         , Dropdown.subscriptions model.coupletPhrase |> Sub.map CoupletPhraseMsg
+        , Dropdown.subscriptions model.configuration |> Sub.map ConfigurationMsg
         ]
