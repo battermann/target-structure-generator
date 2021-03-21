@@ -11,10 +11,16 @@ import ConfigurationGenerator
 import Generator3D
 import Html
 import Html.Attributes
+import Html.Events
 
 
 
 ---- MODEL ----
+
+
+type ActiveTab
+    = Generator3DTab
+    | GeneratorConfigTab
 
 
 type alias Model =
@@ -52,6 +58,7 @@ type Msg
     = Generator3DMsg Generator3D.Msg
     | GeneratorConfigMsg ConfigurationGenerator.Msg
     | TabMsg Tab.State
+    | TabChanged ActiveTab
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -66,13 +73,34 @@ update msg model =
                 |> Tuple.mapBoth (\m -> { model | generatorConfig = m }) (Cmd.map GeneratorConfigMsg)
 
         TabMsg state ->
+            let
+                _ =
+                    Debug.log "Tab" state
+            in
             ( { model | tabState = state }
             , Cmd.none
             )
 
+        TabChanged tab ->
+            let
+                _ =
+                    Debug.log "Tab" tab
+            in
+            ( model, Cmd.none )
+
 
 
 ---- VIEW ----
+
+
+viewPane : Model -> Html.Html Msg
+viewPane model =
+    case model.activeTab of
+        Generator3DTab ->
+            Generator3D.view model.generator3D |> Html.map Generator3DMsg
+
+        GeneratorConfigTab ->
+            ConfigurationGenerator.view model.generatorConfig |> Html.map GeneratorConfigMsg
 
 
 viewTabs : Model -> Html.Html Msg
