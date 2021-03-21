@@ -10,6 +10,8 @@ import Browser
 import ConfigurationGenerator
 import Html
 import Html.Attributes
+import PolymetricPhraseGenerator
+import Ports
 import ThreeDExerciseGenerator
 
 
@@ -20,11 +22,13 @@ import ThreeDExerciseGenerator
 type ActiveTab
     = ThreeDExerciseGeneratorTab
     | ConfigurationGeneratorTab
+    | PolymetricPhraseGeneratorTab
 
 
 type alias Model =
     { threeDExerciseGenerator : ThreeDExerciseGenerator.Model
     , configurationGenerator : ConfigurationGenerator.Model
+    , polymetricPhraseGenerator : PolymetricPhraseGenerator.Model
     , tabState : ActiveTab
     }
 
@@ -37,9 +41,13 @@ init =
 
         configurationGeneratorModel =
             ConfigurationGenerator.init |> Tuple.first
+
+        generatorPolymetricPhraseModel =
+            PolymetricPhraseGenerator.init |> Tuple.first
     in
     ( { threeDExerciseGenerator = threeDExerciseGeneratorModel
       , configurationGenerator = configurationGeneratorModel
+      , polymetricPhraseGenerator = generatorPolymetricPhraseModel
       , tabState = ThreeDExerciseGeneratorTab
       }
     , Cmd.batch
@@ -57,6 +65,9 @@ initTab model =
         ConfigurationGeneratorTab ->
             ConfigurationGenerator.resetClick model.configurationGenerator |> Tuple.mapBoth (\m -> { model | configurationGenerator = m }) (Cmd.map ConfigurationGeneratorMsg)
 
+        PolymetricPhraseGeneratorTab ->
+            ( model, Ports.stopMetronome () )
+
 
 
 ---- UPDATE ----
@@ -66,6 +77,7 @@ type Msg
     = ThreeDExerciseGeneratorMsg ThreeDExerciseGenerator.Msg
     | ConfigurationGeneratorMsg ConfigurationGenerator.Msg
     | TabChanged ActiveTab
+    | PolymetricPhraseGeneratorMsg PolymetricPhraseGenerator.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -81,6 +93,10 @@ update msg model =
 
         TabChanged tab ->
             initTab { model | tabState = tab }
+
+        PolymetricPhraseGeneratorMsg subMsg ->
+            PolymetricPhraseGenerator.update subMsg model.polymetricPhraseGenerator
+                |> Tuple.mapBoth (\m -> { model | polymetricPhraseGenerator = m }) (Cmd.map PolymetricPhraseGeneratorMsg)
 
 
 
@@ -98,6 +114,10 @@ viewButtonGroup model =
             (model.tabState == ConfigurationGeneratorTab)
             [ Button.light, Button.onClick <| TabChanged ConfigurationGeneratorTab ]
             [ Html.text "Configuration Generator" ]
+        , ButtonGroup.radioButton
+            (model.tabState == PolymetricPhraseGeneratorTab)
+            [ Button.light, Button.onClick <| TabChanged PolymetricPhraseGeneratorTab ]
+            [ Html.text "Polymetric Phrase Generator" ]
         ]
 
 
@@ -109,6 +129,9 @@ viewGenerators model =
 
         ConfigurationGeneratorTab ->
             ConfigurationGenerator.view model.configurationGenerator |> Html.map ConfigurationGeneratorMsg
+
+        PolymetricPhraseGeneratorTab ->
+            PolymetricPhraseGenerator.view model.polymetricPhraseGenerator |> Html.map PolymetricPhraseGeneratorMsg
 
 
 view : Model -> Browser.Document Msg
@@ -141,6 +164,7 @@ subscriptions model =
     Sub.batch
         [ ThreeDExerciseGenerator.subscriptions model.threeDExerciseGenerator |> Sub.map ThreeDExerciseGeneratorMsg
         , ConfigurationGenerator.subscriptions model.configurationGenerator |> Sub.map ConfigurationGeneratorMsg
+        , PolymetricPhraseGenerator.subscriptions model.polymetricPhraseGenerator |> Sub.map PolymetricPhraseGeneratorMsg
         ]
 
 

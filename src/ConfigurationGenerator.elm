@@ -204,7 +204,12 @@ viewClickButtonIcon click =
 
 viewConfiguration : Configuration -> Html.Html msg
 viewConfiguration configuration =
-    Html.div [] (Configuration.toMultiLineString configuration |> List.map (\t -> Html.div [] [ Html.text t ]) |> List.singleton |> List.map (Html.p []))
+    Html.div []
+        (Configuration.toMultiLineString configuration
+            |> List.map (\t -> Html.div [] [ Html.text t ])
+            |> List.singleton
+            |> List.map (Html.p [])
+        )
 
 
 view : Model -> Html.Html Msg
