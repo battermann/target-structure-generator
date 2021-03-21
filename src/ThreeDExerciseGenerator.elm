@@ -1,4 +1,4 @@
-module Generator3D exposing (Model, Msg, init, subscriptions, update, view)
+module ThreeDExerciseGenerator exposing (Model, Msg, init, subscriptions, update, view)
 
 import Bootstrap.Button as Button
 import Bootstrap.Form as Form

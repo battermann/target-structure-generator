@@ -8,10 +8,9 @@ import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
 import Browser
 import ConfigurationGenerator
-import Generator3D
 import Html
 import Html.Attributes
-import Html.Events
+import ThreeDExerciseGenerator
 
 
 
@@ -19,13 +18,13 @@ import Html.Events
 
 
 type ActiveTab
-    = Generator3DTab
-    | GeneratorConfigTab
+    = ThreeDExerciseGeneratorTab
+    | ConfigurationGeneratorTab
 
 
 type alias Model =
-    { generator3D : Generator3D.Model
-    , generatorConfig : ConfigurationGenerator.Model
+    { threeDExerciseGenerator : ThreeDExerciseGenerator.Model
+    , configurationGenerator : ConfigurationGenerator.Model
     , tabState : ActiveTab
     }
 
@@ -33,19 +32,19 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     let
-        ( gen3dModel, generator3dCmd ) =
-            Generator3D.init
+        ( threeDExerciseGeneratorModel, threeDExerciseGeneratorCmd ) =
+            ThreeDExerciseGenerator.init
 
-        ( generatorConfigModel, generatorConfigCmd ) =
+        ( configurationGeneratorModel, configurationGeneratorCmd ) =
             ConfigurationGenerator.init
     in
-    ( { generator3D = gen3dModel
-      , generatorConfig = generatorConfigModel
-      , tabState = Generator3DTab
+    ( { threeDExerciseGenerator = threeDExerciseGeneratorModel
+      , configurationGenerator = configurationGeneratorModel
+      , tabState = ThreeDExerciseGeneratorTab
       }
     , Cmd.batch
-        [ generator3dCmd |> Cmd.map Generator3DMsg
-        , generatorConfigCmd |> Cmd.map GeneratorConfigMsg
+        [ threeDExerciseGeneratorCmd |> Cmd.map ThreeDExerciseGeneratorMsg
+        , configurationGeneratorCmd |> Cmd.map ConfigurationGeneratorMsg
         ]
     )
 
@@ -55,21 +54,21 @@ init =
 
 
 type Msg
-    = Generator3DMsg Generator3D.Msg
-    | GeneratorConfigMsg ConfigurationGenerator.Msg
+    = ThreeDExerciseGeneratorMsg ThreeDExerciseGenerator.Msg
+    | ConfigurationGeneratorMsg ConfigurationGenerator.Msg
     | TabChanged ActiveTab
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Generator3DMsg subMsg ->
-            Generator3D.update subMsg model.generator3D
-                |> Tuple.mapBoth (\m -> { model | generator3D = m }) (Cmd.map Generator3DMsg)
+        ThreeDExerciseGeneratorMsg subMsg ->
+            ThreeDExerciseGenerator.update subMsg model.threeDExerciseGenerator
+                |> Tuple.mapBoth (\m -> { model | threeDExerciseGenerator = m }) (Cmd.map ThreeDExerciseGeneratorMsg)
 
-        GeneratorConfigMsg subMsg ->
-            ConfigurationGenerator.update subMsg model.generatorConfig
-                |> Tuple.mapBoth (\m -> { model | generatorConfig = m }) (Cmd.map GeneratorConfigMsg)
+        ConfigurationGeneratorMsg subMsg ->
+            ConfigurationGenerator.update subMsg model.configurationGenerator
+                |> Tuple.mapBoth (\m -> { model | configurationGenerator = m }) (Cmd.map ConfigurationGeneratorMsg)
 
         TabChanged tab ->
             ( { model | tabState = tab }
@@ -85,12 +84,12 @@ viewButtonGroup : Model -> Html.Html Msg
 viewButtonGroup model =
     ButtonGroup.radioButtonGroup [ ButtonGroup.attrs [ Spacing.mb3 ] ]
         [ ButtonGroup.radioButton
-            (model.tabState == Generator3DTab)
-            [ Button.light, Button.onClick <| TabChanged Generator3DTab ]
+            (model.tabState == ThreeDExerciseGeneratorTab)
+            [ Button.light, Button.onClick <| TabChanged ThreeDExerciseGeneratorTab ]
             [ Html.text "3-D Exercise Generator" ]
         , ButtonGroup.radioButton
-            (model.tabState == GeneratorConfigTab)
-            [ Button.light, Button.onClick <| TabChanged GeneratorConfigTab ]
+            (model.tabState == ConfigurationGeneratorTab)
+            [ Button.light, Button.onClick <| TabChanged ConfigurationGeneratorTab ]
             [ Html.text "Configuration Generator" ]
         ]
 
@@ -98,11 +97,11 @@ viewButtonGroup model =
 viewGenerators : Model -> Html.Html Msg
 viewGenerators model =
     case model.tabState of
-        Generator3DTab ->
-            Generator3D.view model.generator3D |> Html.map Generator3DMsg
+        ThreeDExerciseGeneratorTab ->
+            ThreeDExerciseGenerator.view model.threeDExerciseGenerator |> Html.map ThreeDExerciseGeneratorMsg
 
-        GeneratorConfigTab ->
-            ConfigurationGenerator.view model.generatorConfig |> Html.map GeneratorConfigMsg
+        ConfigurationGeneratorTab ->
+            ConfigurationGenerator.view model.configurationGenerator |> Html.map ConfigurationGeneratorMsg
 
 
 view : Model -> Browser.Document Msg
@@ -133,8 +132,8 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Generator3D.subscriptions model.generator3D |> Sub.map Generator3DMsg
-        , ConfigurationGenerator.subscriptions model.generatorConfig |> Sub.map GeneratorConfigMsg
+        [ ThreeDExerciseGenerator.subscriptions model.threeDExerciseGenerator |> Sub.map ThreeDExerciseGeneratorMsg
+        , ConfigurationGenerator.subscriptions model.configurationGenerator |> Sub.map ConfigurationGeneratorMsg
         ]
 
 
