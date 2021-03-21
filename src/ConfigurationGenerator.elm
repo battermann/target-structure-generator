@@ -1,4 +1,4 @@
-module ConfigurationGenerator exposing (Model, Msg, init, subscriptions, update, view)
+module ConfigurationGenerator exposing (Model, Msg, init, resetClick, subscriptions, update, view)
 
 import Bootstrap.Button as Button
 import Bootstrap.Form as Form
@@ -55,7 +55,22 @@ init =
       , configuration = Dropdown.init MelodyMotifMotorAnchor
       , click = Pause
       }
-    , Cmd.batch [ Metryx_3_2 |> Metryx.beats |> Ports.setBeats, 100 |> Tempo.tempo Metryx_3_2 |> Tempo.bpm |> Ports.setBpm ]
+    , Cmd.batch
+        [ Ports.stopMetronome ()
+        , Metryx_3_2 |> Metryx.beats |> Ports.setBeats
+        , 100 |> Tempo.tempo Metryx_3_2 |> Tempo.bpm |> Ports.setBpm
+        ]
+    )
+
+
+resetClick : Model -> ( Model, Cmd Msg )
+resetClick model =
+    ( { model | click = Pause }
+    , Cmd.batch
+        [ Ports.stopMetronome ()
+        , model.metryx.value |> Metryx.beats |> Ports.setBeats
+        , model.tempo |> Tempo.bpm |> Ports.setBpm
+        ]
     )
 
 

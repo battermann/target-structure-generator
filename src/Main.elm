@@ -35,8 +35,8 @@ init =
         ( threeDExerciseGeneratorModel, threeDExerciseGeneratorCmd ) =
             ThreeDExerciseGenerator.init
 
-        ( configurationGeneratorModel, configurationGeneratorCmd ) =
-            ConfigurationGenerator.init
+        configurationGeneratorModel =
+            ConfigurationGenerator.init |> Tuple.first
     in
     ( { threeDExerciseGenerator = threeDExerciseGeneratorModel
       , configurationGenerator = configurationGeneratorModel
@@ -44,9 +44,18 @@ init =
       }
     , Cmd.batch
         [ threeDExerciseGeneratorCmd |> Cmd.map ThreeDExerciseGeneratorMsg
-        , configurationGeneratorCmd |> Cmd.map ConfigurationGeneratorMsg
         ]
     )
+
+
+initTab : Model -> ( Model, Cmd Msg )
+initTab model =
+    case model.tabState of
+        ThreeDExerciseGeneratorTab ->
+            ThreeDExerciseGenerator.resetClick model.threeDExerciseGenerator |> Tuple.mapBoth (\m -> { model | threeDExerciseGenerator = m }) (Cmd.map ThreeDExerciseGeneratorMsg)
+
+        ConfigurationGeneratorTab ->
+            ConfigurationGenerator.resetClick model.configurationGenerator |> Tuple.mapBoth (\m -> { model | configurationGenerator = m }) (Cmd.map ConfigurationGeneratorMsg)
 
 
 
@@ -71,9 +80,7 @@ update msg model =
                 |> Tuple.mapBoth (\m -> { model | configurationGenerator = m }) (Cmd.map ConfigurationGeneratorMsg)
 
         TabChanged tab ->
-            ( { model | tabState = tab }
-            , Cmd.none
-            )
+            initTab { model | tabState = tab }
 
 
 
