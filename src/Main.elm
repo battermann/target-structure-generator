@@ -1,9 +1,9 @@
 module Main exposing (main)
 
 import Bootstrap.Button as Button
+import Bootstrap.ButtonGroup as ButtonGroup
 import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid
-import Bootstrap.Tab as Tab
 import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
 import Browser
@@ -26,7 +26,7 @@ type ActiveTab
 type alias Model =
     { generator3D : Generator3D.Model
     , generatorConfig : ConfigurationGenerator.Model
-    , tabState : Tab.State
+    , tabState : ActiveTab
     }
 
 
@@ -41,7 +41,7 @@ init =
     in
     ( { generator3D = gen3dModel
       , generatorConfig = generatorConfigModel
-      , tabState = Tab.initialState
+      , tabState = Generator3DTab
       }
     , Cmd.batch
         [ generator3dCmd |> Cmd.map Generator3DMsg
@@ -57,7 +57,6 @@ init =
 type Msg
     = Generator3DMsg Generator3D.Msg
     | GeneratorConfigMsg ConfigurationGenerator.Msg
-    | TabMsg Tab.State
     | TabChanged ActiveTab
 
 
@@ -72,57 +71,38 @@ update msg model =
             ConfigurationGenerator.update subMsg model.generatorConfig
                 |> Tuple.mapBoth (\m -> { model | generatorConfig = m }) (Cmd.map GeneratorConfigMsg)
 
-        TabMsg state ->
-            let
-                _ =
-                    Debug.log "Tab" state
-            in
-            ( { model | tabState = state }
+        TabChanged tab ->
+            ( { model | tabState = tab }
             , Cmd.none
             )
-
-        TabChanged tab ->
-            let
-                _ =
-                    Debug.log "Tab" tab
-            in
-            ( model, Cmd.none )
 
 
 
 ---- VIEW ----
 
 
-viewPane : Model -> Html.Html Msg
-viewPane model =
-    case model.activeTab of
+viewButtonGroup : Model -> Html.Html Msg
+viewButtonGroup model =
+    ButtonGroup.radioButtonGroup [ ButtonGroup.attrs [ Spacing.mb3 ] ]
+        [ ButtonGroup.radioButton
+            (model.tabState == Generator3DTab)
+            [ Button.light, Button.onClick <| TabChanged Generator3DTab ]
+            [ Html.text "3-D Exercise Generator" ]
+        , ButtonGroup.radioButton
+            (model.tabState == GeneratorConfigTab)
+            [ Button.light, Button.onClick <| TabChanged GeneratorConfigTab ]
+            [ Html.text "Configuration Generator" ]
+        ]
+
+
+viewGenerators : Model -> Html.Html Msg
+viewGenerators model =
+    case model.tabState of
         Generator3DTab ->
             Generator3D.view model.generator3D |> Html.map Generator3DMsg
 
         GeneratorConfigTab ->
             ConfigurationGenerator.view model.generatorConfig |> Html.map GeneratorConfigMsg
-
-
-viewTabs : Model -> Html.Html Msg
-viewTabs model =
-    Tab.config TabMsg
-        |> Tab.items
-            [ Tab.item
-                { id = "generator3d"
-                , link = Tab.link [] [ Html.text "3-D Exercise Generator" ]
-                , pane =
-                    Tab.pane [ Spacing.mt3 ]
-                        [ Generator3D.view model.generator3D |> Html.map Generator3DMsg ]
-                }
-            , Tab.item
-                { id = "configurations-generator"
-                , link = Tab.link [] [ Html.text "Configurations Generator" ]
-                , pane =
-                    Tab.pane [ Spacing.mt3 ]
-                        [ ConfigurationGenerator.view model.generatorConfig |> Html.map GeneratorConfigMsg ]
-                }
-            ]
-        |> Tab.view model.tabState
 
 
 view : Model -> Browser.Document Msg
@@ -134,7 +114,8 @@ view model =
             , Grid.row []
                 [ Grid.col []
                     [ Html.h1 [ Spacing.mb3 ] [ Html.text "Roger Treece Musical Fluency Exercise" ]
-                    , viewTabs model
+                    , viewButtonGroup model
+                    , viewGenerators model
                     , Button.linkButton
                         [ Button.roleLink, Button.attrs [ Size.w100, Html.Attributes.style "max-width" "300px", Html.Attributes.href "https://github.com/battermann/target-structure-generator" ] ]
                         [ Html.i [ Html.Attributes.class "fab fa-github" ] [], Html.text " Source Code" ]
