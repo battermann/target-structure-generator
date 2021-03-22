@@ -10,7 +10,7 @@ import Browser
 import ConfigurationGenerator
 import Html
 import Html.Attributes
-import PolymetricPhraseGenerator
+import PolyMetryxPhraseGenerator
 import Ports
 import ThreeDExerciseGenerator
 
@@ -22,13 +22,13 @@ import ThreeDExerciseGenerator
 type ActiveTab
     = ThreeDExerciseGeneratorTab
     | ConfigurationGeneratorTab
-    | PolymetricPhraseGeneratorTab
+    | PolyMetryxPhraseGeneratorTab
 
 
 type alias Model =
     { threeDExerciseGenerator : ThreeDExerciseGenerator.Model
     , configurationGenerator : ConfigurationGenerator.Model
-    , polymetricPhraseGenerator : PolymetricPhraseGenerator.Model
+    , polyMetryxPhraseGenerator : PolyMetryxPhraseGenerator.Model
     , tabState : ActiveTab
     }
 
@@ -42,12 +42,12 @@ init =
         configurationGeneratorModel =
             ConfigurationGenerator.init |> Tuple.first
 
-        generatorPolymetricPhraseModel =
-            PolymetricPhraseGenerator.init |> Tuple.first
+        generatorPolyMetryxPhraseModel =
+            PolyMetryxPhraseGenerator.init |> Tuple.first
     in
     ( { threeDExerciseGenerator = threeDExerciseGeneratorModel
       , configurationGenerator = configurationGeneratorModel
-      , polymetricPhraseGenerator = generatorPolymetricPhraseModel
+      , polyMetryxPhraseGenerator = generatorPolyMetryxPhraseModel
       , tabState = ThreeDExerciseGeneratorTab
       }
     , Cmd.batch
@@ -65,7 +65,7 @@ initTab model =
         ConfigurationGeneratorTab ->
             ConfigurationGenerator.resetClick model.configurationGenerator |> Tuple.mapBoth (\m -> { model | configurationGenerator = m }) (Cmd.map ConfigurationGeneratorMsg)
 
-        PolymetricPhraseGeneratorTab ->
+        PolyMetryxPhraseGeneratorTab ->
             ( model, Ports.stopMetronome () )
 
 
@@ -77,7 +77,7 @@ type Msg
     = ThreeDExerciseGeneratorMsg ThreeDExerciseGenerator.Msg
     | ConfigurationGeneratorMsg ConfigurationGenerator.Msg
     | TabChanged ActiveTab
-    | PolymetricPhraseGeneratorMsg PolymetricPhraseGenerator.Msg
+    | PolyMetryxPhraseGeneratorMsg PolyMetryxPhraseGenerator.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -94,9 +94,9 @@ update msg model =
         TabChanged tab ->
             initTab { model | tabState = tab }
 
-        PolymetricPhraseGeneratorMsg subMsg ->
-            PolymetricPhraseGenerator.update subMsg model.polymetricPhraseGenerator
-                |> Tuple.mapBoth (\m -> { model | polymetricPhraseGenerator = m }) (Cmd.map PolymetricPhraseGeneratorMsg)
+        PolyMetryxPhraseGeneratorMsg subMsg ->
+            PolyMetryxPhraseGenerator.update subMsg model.polyMetryxPhraseGenerator
+                |> Tuple.mapBoth (\m -> { model | polyMetryxPhraseGenerator = m }) (Cmd.map PolyMetryxPhraseGeneratorMsg)
 
 
 
@@ -115,9 +115,9 @@ viewButtonGroup model =
             [ Button.light, Button.onClick <| TabChanged ConfigurationGeneratorTab ]
             [ Html.text "Configuration Generator" ]
         , ButtonGroup.radioButton
-            (model.tabState == PolymetricPhraseGeneratorTab)
-            [ Button.light, Button.onClick <| TabChanged PolymetricPhraseGeneratorTab ]
-            [ Html.text "Polymetric Phrase Generator" ]
+            (model.tabState == PolyMetryxPhraseGeneratorTab)
+            [ Button.light, Button.onClick <| TabChanged PolyMetryxPhraseGeneratorTab ]
+            [ Html.text "PolyMetryx Phrase Generator" ]
         ]
 
 
@@ -130,23 +130,23 @@ viewGenerators model =
         ConfigurationGeneratorTab ->
             ConfigurationGenerator.view model.configurationGenerator |> Html.map ConfigurationGeneratorMsg
 
-        PolymetricPhraseGeneratorTab ->
-            PolymetricPhraseGenerator.view model.polymetricPhraseGenerator |> Html.map PolymetricPhraseGeneratorMsg
+        PolyMetryxPhraseGeneratorTab ->
+            PolyMetryxPhraseGenerator.view model.polyMetryxPhraseGenerator |> Html.map PolyMetryxPhraseGeneratorMsg
 
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Roger Treece Musical Fluency Exercise"
+    { title = "Roger Treece Musical Fluency Exercises"
     , body =
         [ Grid.container []
             [ CDN.stylesheet -- creates an inline style node with the Bootstrap CSS
             , Grid.row []
                 [ Grid.col []
-                    [ Html.h1 [ Spacing.mb3 ] [ Html.text "Roger Treece Musical Fluency Exercise" ]
+                    [ Html.h1 [ Spacing.mb3 ] [ Html.text "Roger Treece Musical Fluency Exercises" ]
                     , viewButtonGroup model
                     , viewGenerators model
                     , Button.linkButton
-                        [ Button.roleLink, Button.attrs [ Size.w100, Html.Attributes.style "max-width" "300px", Html.Attributes.href "https://github.com/battermann/target-structure-generator" ] ]
+                        [ Button.roleLink, Button.attrs [ Size.w100, Html.Attributes.style "max-width" "360px", Html.Attributes.href "https://github.com/battermann/target-structure-generator" ] ]
                         [ Html.i [ Html.Attributes.class "fab fa-github" ] [], Html.text " Source Code" ]
                     ]
                 ]
@@ -164,7 +164,7 @@ subscriptions model =
     Sub.batch
         [ ThreeDExerciseGenerator.subscriptions model.threeDExerciseGenerator |> Sub.map ThreeDExerciseGeneratorMsg
         , ConfigurationGenerator.subscriptions model.configurationGenerator |> Sub.map ConfigurationGeneratorMsg
-        , PolymetricPhraseGenerator.subscriptions model.polymetricPhraseGenerator |> Sub.map PolymetricPhraseGeneratorMsg
+        , PolyMetryxPhraseGenerator.subscriptions model.polyMetryxPhraseGenerator |> Sub.map PolyMetryxPhraseGeneratorMsg
         ]
 
 

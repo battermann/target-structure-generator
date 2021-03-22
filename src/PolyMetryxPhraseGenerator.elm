@@ -1,4 +1,4 @@
-module PolymetricPhraseGenerator exposing (Model, Msg, init, subscriptions, update, view)
+module PolyMetryxPhraseGenerator exposing (Model, Msg, init, subscriptions, update, view)
 
 import Bootstrap.Button as Button
 import Bootstrap.Form as Form
@@ -12,7 +12,7 @@ import Markdown
 import Models.MelodicForm as MelodicForm exposing (MelodicForm(..))
 import Models.Metryx exposing (Metryx(..))
 import Models.Mode as Mode exposing (Mode(..))
-import Models.Polymetric as Polymetric exposing (Polymetric)
+import Models.PolyMetryx as PolyMetryx exposing (PolyMetryx)
 import Random
 
 
@@ -23,14 +23,14 @@ import Random
 type alias Structure =
     { mode : Mode
     , melodicForm : MelodicForm
-    , polymetric : Polymetric
+    , polyMetryx : PolyMetryx
     }
 
 
 type alias Model =
     { mode : Dropdown.Model Mode
     , melodicForm : Dropdown.Model MelodicForm
-    , polymetric : Dropdown.Model Polymetric
+    , polyMetryx : Dropdown.Model PolyMetryx
     }
 
 
@@ -38,7 +38,7 @@ init : ( Model, Cmd Msg )
 init =
     ( { mode = Dropdown.init Ionian
       , melodicForm = Dropdown.init Period
-      , polymetric = Dropdown.init ( Metryx_3_2, Metryx_3_3 )
+      , polyMetryx = Dropdown.init ( Metryx_3_2, Metryx_3_3 )
       }
     , Cmd.none
     )
@@ -51,7 +51,7 @@ init =
 type Msg
     = ModeMsg (Dropdown.Msg Mode)
     | MelodicFormMsg (Dropdown.Msg MelodicForm)
-    | PolymetricMsg (Dropdown.Msg Polymetric)
+    | PolyMetryxMsg (Dropdown.Msg PolyMetryx)
     | Randomize
     | Generated Structure
 
@@ -65,8 +65,8 @@ update msg model =
         MelodicFormMsg subMsg ->
             ( { model | melodicForm = Dropdown.update subMsg model.melodicForm }, Cmd.none )
 
-        PolymetricMsg subMsg ->
-            ( { model | polymetric = Dropdown.update subMsg model.polymetric }, Cmd.none )
+        PolyMetryxMsg subMsg ->
+            ( { model | polyMetryx = Dropdown.update subMsg model.polyMetryx }, Cmd.none )
 
         Randomize ->
             ( model, Random.generate Generated random )
@@ -75,7 +75,7 @@ update msg model =
             ( { model
                 | mode = Dropdown.init structure.mode
                 , melodicForm = Dropdown.init structure.melodicForm
-                , polymetric = Dropdown.init structure.polymetric
+                , polyMetryx = Dropdown.init structure.polyMetryx
               }
             , Cmd.none
             )
@@ -84,25 +84,25 @@ update msg model =
 random : Random.Generator Structure
 random =
     Random.map3
-        (\mode melodicForm polymetric ->
+        (\mode melodicForm polyMetryx ->
             { mode = mode
             , melodicForm = melodicForm
-            , polymetric = polymetric
+            , polyMetryx = polyMetryx
             }
         )
         Mode.random
         MelodicForm.random
-        Polymetric.random
+        PolyMetryx.random
 
 
 
 ---- VIEW ----
 
 
-viewPolymetric : Polymetric -> Html.Html msg
-viewPolymetric polymetric =
+viewPolyMetryx : PolyMetryx -> Html.Html msg
+viewPolyMetryx polyMetryx =
     Html.div []
-        (Polymetric.toMultiLineString polymetric
+        (PolyMetryx.toMultiLineString polyMetryx
             |> List.map (\t -> Html.div [] [ Html.text t ])
             |> List.singleton
             |> List.map (Html.p [])
@@ -157,11 +157,11 @@ viewGenerator model =
         [ Form.group []
             [ Html.div [ Spacing.mt2 ]
                 [ Dropdown.view
-                    (Html.div [] [ Html.text "Polymetric:", viewPolymetric model.polymetric.value ])
-                    Polymetric.all
-                    viewPolymetric
-                    model.polymetric
-                    |> Html.map PolymetricMsg
+                    (Html.div [] [ Html.text "PolyMetryx:", viewPolyMetryx model.polyMetryx.value ])
+                    PolyMetryx.all
+                    viewPolyMetryx
+                    model.polyMetryx
+                    |> Html.map PolyMetryxMsg
                 ]
             ]
         , Form.form []
@@ -203,5 +203,5 @@ subscriptions model =
     Sub.batch
         [ Dropdown.subscriptions model.mode |> Sub.map ModeMsg
         , Dropdown.subscriptions model.melodicForm |> Sub.map MelodicFormMsg
-        , Dropdown.subscriptions model.polymetric |> Sub.map PolymetricMsg
+        , Dropdown.subscriptions model.polyMetryx |> Sub.map PolyMetryxMsg
         ]
