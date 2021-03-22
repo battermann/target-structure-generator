@@ -2,11 +2,13 @@ module PolymetricPhraseGenerator exposing (Model, Msg, init, subscriptions, upda
 
 import Bootstrap.Button as Button
 import Bootstrap.Form as Form
+import Bootstrap.Grid as Grid
 import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
 import Dropdown.Dropdown as Dropdown
 import Html
 import Html.Attributes
+import Markdown
 import Models.MelodicForm as MelodicForm exposing (MelodicForm(..))
 import Models.Metryx exposing (Metryx(..))
 import Models.Mode as Mode exposing (Mode(..))
@@ -107,8 +109,50 @@ viewPolymetric polymetric =
         )
 
 
-view : Model -> Html.Html Msg
-view model =
+description : String
+description =
+    """### Poly-Metryx Exercise
+
+The value of this exercise is to create different patterns for measure-by-measure rhythmic combustion by super-imposing one *Metryx* over another.
+
+The *alternate combustion* is usually found in the shorter phrase lengths.
+
+A value of the alternate combustion in larger phrases is that you’ve got *more longevity built into the pattern*. What this becomes is a texture of Sub-Division, rather than a measure-by-measure phrase combustion.
+
+This will create various phrase-length possibilities, which will create various *Couplet* patterns within the phrases.
+
+This will also de-sensitize one’s self to the grouping of the Sub-Div in the first *Metryx*.
+
+In this exercise, the sub-division remains constant. One voice will be the Motor and the second, the Anchor. The two different numbers after each *Metryx* are the number of measures required for the two different *Metryx* to come together on a downbeat on 1.
+
+**Guidelines**:
+
+1. Use only *Metryx* patterns.
+
+2. Choose one *Metryx* as the *Motor Metryx* and the other as the *Anchor Metryx*.
+
+3. The *Anchor Metryx* is going to be the ruling *Metryx*,  the actual *Metryx*. It will determine the length of your phrase and the *Couplet movement*.
+
+4. The Motor will be static; only the Anchor will move.
+
+```txt
+    Example: 3-4 = 5
+             5-3 = 4
+```
+
+If you choose 3-4 as your *Motor Metryx*, you’ll actually be in a 5-3 *Metryx*, and your phrase will be four measures long.
+
+If you choose 5-3 as you *Motor Metryx*, you’ll actually be in a 3-4 *Metryx*, and you’ll have a five-measure phrase.
+"""
+
+
+viewDescription : Html.Html Msg
+viewDescription =
+    Markdown.toHtml [] description
+
+
+viewGenerator : Model -> Html.Html Msg
+viewGenerator model =
     Html.div []
         [ Form.group []
             [ Html.div [ Spacing.mt2 ]
@@ -137,6 +181,16 @@ view model =
             , Button.attrs [ Size.w100, Html.Attributes.style "max-width" "360px", Spacing.mr2 ]
             ]
             [ Html.div [] [ Html.i [ Html.Attributes.class "fas fa-random", Spacing.mr2 ] [], Html.text "RANDOMIZE" ] ]
+        ]
+
+
+view : Model -> Html.Html Msg
+view model =
+    Grid.container []
+        [ Grid.row []
+            [ Grid.col [] [ viewGenerator model ]
+            , Grid.col [] [ viewDescription ]
+            ]
         ]
 
 

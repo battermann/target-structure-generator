@@ -105,7 +105,7 @@ update msg model =
 
 viewButtonGroup : Model -> Html.Html Msg
 viewButtonGroup model =
-    ButtonGroup.radioButtonGroup [ ButtonGroup.attrs [ Spacing.mb3 ] ]
+    ButtonGroup.radioButtonGroup [ ButtonGroup.attrs [ Spacing.mb3, Size.w100 ] ]
         [ ButtonGroup.radioButton
             (model.tabState == ThreeDExerciseGeneratorTab)
             [ Button.light, Button.onClick <| TabChanged ThreeDExerciseGeneratorTab ]
