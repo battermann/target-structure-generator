@@ -180,7 +180,7 @@ viewTempo model =
             [ Html.input
                 [ Spacing.mt2
                 , Size.w100
-                , Html.Attributes.style "max-width" "300px"
+                , Html.Attributes.style "max-width" "360px"
                 , Html.Attributes.type_ "range"
                 , Html.Attributes.min min
                 , Html.Attributes.max max
@@ -239,13 +239,14 @@ view model =
             ]
         , Html.div
             [ Size.w100
-            , Html.Attributes.style "max-width" "300px"
+            , Html.Attributes.style "max-width" "360px"
             , Flex.block
             , Flex.row
             , Flex.justifyBetween
             ]
             [ Button.button
                 [ Button.primary
+                , Button.large
                 , Button.onClick Randomize
                 , Button.attrs [ Size.w100, Spacing.mr2 ]
                 ]

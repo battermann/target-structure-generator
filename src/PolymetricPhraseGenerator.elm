@@ -7,7 +7,7 @@ import Bootstrap.Utilities.Spacing as Spacing
 import Dropdown.Dropdown as Dropdown
 import Html
 import Html.Attributes
-import Models.MelodicFormPlus as MelodicForm exposing (MelodicForm(..))
+import Models.MelodicForm as MelodicForm exposing (MelodicForm(..))
 import Models.Metryx exposing (Metryx(..))
 import Models.Mode as Mode exposing (Mode(..))
 import Models.Polymetric as Polymetric exposing (Polymetric)
@@ -134,7 +134,7 @@ view model =
             [ Button.primary
             , Button.large
             , Button.onClick Randomize
-            , Button.attrs [ Size.w100, Html.Attributes.style "max-width" "300px", Spacing.mr2 ]
+            , Button.attrs [ Size.w100, Html.Attributes.style "max-width" "360px", Spacing.mr2 ]
             ]
             [ Html.div [] [ Html.i [ Html.Attributes.class "fas fa-random", Spacing.mr2 ] [], Html.text "RANDOMIZE" ] ]
         ]
