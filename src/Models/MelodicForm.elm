@@ -6,11 +6,19 @@ import Random
 type MelodicForm
     = Period
     | Sequence
+    | QuestionAnswer
+    | SequenceInPeriod
+    | PeriodInSequence
 
 
 all : List MelodicForm
 all =
-    [ Period, Sequence ]
+    [ Period
+    , Sequence
+    , QuestionAnswer
+    , SequenceInPeriod
+    , PeriodInSequence
+    ]
 
 
 toString : MelodicForm -> String
@@ -22,7 +30,21 @@ toString melodicForm =
         Sequence ->
             "Sequence"
 
+        QuestionAnswer ->
+            "Question/Answer"
+
+        SequenceInPeriod ->
+            "Sequence in Period"
+
+        PeriodInSequence ->
+            "Period in Sequence"
+
 
 random : Random.Generator MelodicForm
 random =
-    Random.uniform Period [ Sequence ]
+    Random.uniform Period
+        [ Sequence
+        , QuestionAnswer
+        , SequenceInPeriod
+        , PeriodInSequence
+        ]

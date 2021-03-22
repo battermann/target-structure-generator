@@ -12,7 +12,7 @@ view : Html.Html msg -> (Dropdown.State -> msg) -> Dropdown.State -> List ( msg,
 view name toggleMsg state items =
     Dropdown.dropdown
         state
-        { options = [ Dropdown.attrs [ Size.w100, Html.Attributes.style "max-width" "300px" ] ]
+        { options = [ Dropdown.attrs [ Size.w100, Html.Attributes.style "max-width" "360px" ] ]
         , toggleMsg = toggleMsg
         , toggleButton =
             Dropdown.toggle [ Button.outlinePrimary, Button.large ] [ name ]
