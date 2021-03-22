@@ -9,6 +9,7 @@ import Dropdown.Dropdown as Dropdown
 import Html
 import Html.Attributes
 import Html.Events
+import Models.CoupletPhrase as CoupletPhrase exposing (CoupletPhrase(..))
 import Models.FirstPosition as FirstPosition exposing (FirstPosition(..))
 import Models.MelodicForm as MelodicForm exposing (MelodicForm(..))
 import Models.Metryx as Metryx exposing (Metryx(..))
@@ -28,6 +29,7 @@ type alias Structure =
     , mode : Mode
     , firstPosition : FirstPosition
     , melodicForm : MelodicForm
+    , coupletPhrase : CoupletPhrase
     }
 
 
@@ -42,6 +44,7 @@ type alias Model =
     , mode : Dropdown.Model Mode
     , firstPosition : Dropdown.Model FirstPosition
     , melodicForm : Dropdown.Model MelodicForm
+    , coupletPhrase : Dropdown.Model CoupletPhrase
     , click : Click
     }
 
@@ -53,6 +56,7 @@ init =
       , firstPosition = Dropdown.init Open
       , melodicForm = Dropdown.init Period
       , tempo = Tempo.tempo Metryx_3_2 100
+      , coupletPhrase = Dropdown.init AB
       , click = Pause
       }
     , Cmd.batch
@@ -83,6 +87,7 @@ type Msg
     | ModeMsg (Dropdown.Msg Mode)
     | FirstPositionMsg (Dropdown.Msg FirstPosition)
     | MelodicFormMsg (Dropdown.Msg MelodicForm)
+    | CoupletPhraseMsg (Dropdown.Msg CoupletPhrase)
     | TempoMsg String
     | Randomize
     | Generated Structure
@@ -116,6 +121,9 @@ update msg model =
         MelodicFormMsg melodicFormMsg ->
             ( { model | melodicForm = Dropdown.update melodicFormMsg model.melodicForm }, Cmd.none )
 
+        CoupletPhraseMsg coupletPhraseMsg ->
+            ( { model | coupletPhrase = Dropdown.update coupletPhraseMsg model.coupletPhrase }, Cmd.none )
+
         TempoMsg tempoStr ->
             case String.toInt tempoStr of
                 Just tempo ->
@@ -134,6 +142,7 @@ update msg model =
                 , firstPosition = Dropdown.init structure.firstPosition
                 , melodicForm = Dropdown.init structure.melodicForm
                 , tempo = structure.tempo
+                , coupletPhrase = Dropdown.init structure.coupletPhrase
               }
             , Cmd.batch [ structure.metryx |> Metryx.beats |> Ports.setBeats, structure.tempo |> Tempo.bpm |> Ports.setBpm ]
             )
@@ -149,19 +158,21 @@ update msg model =
 
 random : Random.Generator Structure
 random =
-    Random.map4
-        (\( metryx, tempo ) mode firstPosition melodicForm ->
+    Random.map5
+        (\( metryx, tempo ) mode firstPosition melodicForm coupletPhrase ->
             { metryx = metryx
             , tempo = tempo
             , mode = mode
             , firstPosition = firstPosition
             , melodicForm = melodicForm
+            , coupletPhrase = coupletPhrase
             }
         )
         (Metryx.random |> Random.andThen (\m -> Tempo.random m |> Random.map (Tuple.pair m)))
         Mode.random
         FirstPosition.random
         MelodicForm.random
+        CoupletPhrase.random
 
 
 
@@ -219,6 +230,9 @@ view model =
             , Form.group []
                 [ Html.div [ Spacing.mt2 ] [ Dropdown.view (Html.text ("Melodic Form: " ++ MelodicForm.toString model.melodicForm.value)) MelodicForm.all (MelodicForm.toString >> Html.text) model.melodicForm |> Html.map MelodicFormMsg ]
                 ]
+            , Form.group []
+                [ Html.div [ Spacing.mt2 ] [ Dropdown.view (Html.text ("Couplet Phrase: " ++ CoupletPhrase.toString model.coupletPhrase.value)) CoupletPhrase.all (CoupletPhrase.toString >> Html.text) model.coupletPhrase |> Html.map CoupletPhraseMsg ]
+                ]
             ]
         , Html.div
             [ Size.w100
@@ -255,4 +269,5 @@ subscriptions model =
         , Dropdown.subscriptions model.mode |> Sub.map ModeMsg
         , Dropdown.subscriptions model.firstPosition |> Sub.map FirstPositionMsg
         , Dropdown.subscriptions model.melodicForm |> Sub.map MelodicFormMsg
+        , Dropdown.subscriptions model.coupletPhrase |> Sub.map CoupletPhraseMsg
         ]
