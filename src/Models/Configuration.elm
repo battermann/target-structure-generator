@@ -8,14 +8,18 @@ type Configuration
     | MelodyMelodyHarmonyMotorAnchor
     | MelodyMelodyHarmonyMelodyHarmonyAnchor
     | MelodyMelodyHarmonyMelodyHarmonyMelodyHarmony
+    | MotifMotifHarmonyMotorAnchor
+    | MotorMelodyMotifHarmonyMotif
+    | MotifHarmonyMotifMelodyHarmonyMelody
     | MelodyMotorHarmonyMotorAnchor
-    | MelodyAnchorHarmonyAnchorHarmonyAnchor
+    | MotorHarmonyMelodyMotorAnchor
+    | MelodyMotorAnchorHarmonyAnchor
+    | Motor_2Motor_1MelodyMelodyHarmony
     | MotifHarmonyMotifAnchorHarmonyAnchor
     | MotifHarmonyMotifMotifHarmonyAnchor
     | MotifHarmonyMotifMotifHarmonyMotifHarmony
-    | MotorHarmonyMotorMelodyMelodyHarmony
+    | MelodyMotor_2Motor_1Anchor
     | MotorHarmonyMotorAnchorHarmonyAnchor
-    | MelodyMotorHarmonyMotorMotorHarmony
 
 
 all : List Configuration
@@ -24,14 +28,18 @@ all =
     , MelodyMelodyHarmonyMotorAnchor
     , MelodyMelodyHarmonyMelodyHarmonyAnchor
     , MelodyMelodyHarmonyMelodyHarmonyMelodyHarmony
+    , MotifMotifHarmonyMotorAnchor
+    , MotorMelodyMotifHarmonyMotif
+    , MotifHarmonyMotifMelodyHarmonyMelody
     , MelodyMotorHarmonyMotorAnchor
-    , MelodyAnchorHarmonyAnchorHarmonyAnchor
+    , MotorHarmonyMelodyMotorAnchor
+    , MelodyMotorAnchorHarmonyAnchor
+    , Motor_2Motor_1MelodyMelodyHarmony
     , MotifHarmonyMotifAnchorHarmonyAnchor
     , MotifHarmonyMotifMotifHarmonyAnchor
     , MotifHarmonyMotifMotifHarmonyMotifHarmony
-    , MotorHarmonyMotorMelodyMelodyHarmony
+    , MelodyMotor_2Motor_1Anchor
     , MotorHarmonyMotorAnchorHarmonyAnchor
-    , MelodyMotorHarmonyMotorMotorHarmony
     ]
 
 
@@ -47,37 +55,49 @@ toMultiLineString onfiguration =
             render [ "Melody", "Motif", "Motor", "Anchor" ]
 
         MelodyMelodyHarmonyMotorAnchor ->
-            render [ "Melody", "MelodyHarmony", "Motor", "Anchor" ]
+            render [ "Melody", "Melody HARMONY", "Motor", "Anchor" ]
 
         MelodyMelodyHarmonyMelodyHarmonyAnchor ->
-            render [ "Melody", "MelodyHarmony", "MelodyHarmony", "Anchor" ]
+            render [ "Melody", "Melody HARMONY", "Melody HARMONY", "Anchor" ]
 
         MelodyMelodyHarmonyMelodyHarmonyMelodyHarmony ->
-            render [ "Melody", "MelodyHarmony", "MelodyHarmony", "MelodyHarmony" ]
+            render [ "Melody", "Melody HARMONY", "Melody HARMONY", "Melody HARMONY" ]
+
+        MotifMotifHarmonyMotorAnchor ->
+            render [ "Motif", "Motif HARMONY", "Motor", "Anchor" ]
+
+        MotorMelodyMotifHarmonyMotif ->
+            render [ "Motor", "Melody", "Motif HARMONY", "Motif" ]
+
+        MotifHarmonyMotifMelodyHarmonyMelody ->
+            render [ "Motif HARMONY", "Motif", "Melody HARMONY", "Melody" ]
 
         MelodyMotorHarmonyMotorAnchor ->
-            render [ "Melody", "MotorHarmony", "Motor", "Anchor" ]
+            render [ "Melody", "Motor HARMONY", "Motor", "Anchor" ]
 
-        MelodyAnchorHarmonyAnchorHarmonyAnchor ->
-            render [ "Melody", "AnchorHarmony", "AnchorHarmony", "Anchor" ]
+        MotorHarmonyMelodyMotorAnchor ->
+            render [ "Motor HARMONY", "Melody", "Motor", "Anchor" ]
+
+        MelodyMotorAnchorHarmonyAnchor ->
+            render [ "Melody", "Motor", "Anchor HARMONY", "Anchor" ]
+
+        Motor_2Motor_1MelodyMelodyHarmony ->
+            render [ "Motor 2", "Motor 1", "Melody", "Melody HARMONY" ]
 
         MotifHarmonyMotifAnchorHarmonyAnchor ->
-            render [ "MotifHarmony", "Motif", "AnchorHarmony", "Anchor" ]
+            render [ "Motif HARMONY", "Motif", "Anchor HARMONY", "Anchor" ]
 
         MotifHarmonyMotifMotifHarmonyAnchor ->
-            render [ "MotifHarmony", "Motif", "MotifHarmony", "Anchor" ]
+            render [ "Motif HARMONY", "Motif", "Motif HARMONY", "Anchor" ]
 
         MotifHarmonyMotifMotifHarmonyMotifHarmony ->
-            render [ "MotifHarmony", "Motif", "MotifHarmony", "MotifHarmony" ]
+            render [ "Motif HARMONY", "Motif", "Motif HARMONY", "Motif HARMONY" ]
 
-        MotorHarmonyMotorMelodyMelodyHarmony ->
-            render [ "MotorHarmony", "Motor", "Melody", "MelodyHarmony" ]
+        MelodyMotor_2Motor_1Anchor ->
+            render [ "Melody", "Motor 2", "Motor 1", "Anchor" ]
 
         MotorHarmonyMotorAnchorHarmonyAnchor ->
-            render [ "MotorHarmony", "Motor", "AnchorHarmony", "Anchor" ]
-
-        MelodyMotorHarmonyMotorMotorHarmony ->
-            render [ "Melody", "MotorHarmony", "Motor", "MotorHarmony" ]
+            render [ "Motor HARMONY", "Motor", "Anchor HARMONY", "Anchor" ]
 
 
 random : Random.Generator Configuration
@@ -86,12 +106,16 @@ random =
         [ MelodyMelodyHarmonyMotorAnchor
         , MelodyMelodyHarmonyMelodyHarmonyAnchor
         , MelodyMelodyHarmonyMelodyHarmonyMelodyHarmony
+        , MotifMotifHarmonyMotorAnchor
+        , MotorMelodyMotifHarmonyMotif
+        , MotifHarmonyMotifMelodyHarmonyMelody
         , MelodyMotorHarmonyMotorAnchor
-        , MelodyAnchorHarmonyAnchorHarmonyAnchor
+        , MotorHarmonyMelodyMotorAnchor
+        , MelodyMotorAnchorHarmonyAnchor
+        , Motor_2Motor_1MelodyMelodyHarmony
         , MotifHarmonyMotifAnchorHarmonyAnchor
         , MotifHarmonyMotifMotifHarmonyAnchor
         , MotifHarmonyMotifMotifHarmonyMotifHarmony
-        , MotorHarmonyMotorMelodyMelodyHarmony
+        , MelodyMotor_2Motor_1Anchor
         , MotorHarmonyMotorAnchorHarmonyAnchor
-        , MelodyMotorHarmonyMotorMotorHarmony
         ]

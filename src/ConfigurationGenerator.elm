@@ -2,6 +2,7 @@ module ConfigurationGenerator exposing (Model, Msg, init, resetClick, subscripti
 
 import Bootstrap.Button as Button
 import Bootstrap.Form as Form
+import Bootstrap.Text as Text
 import Bootstrap.Utilities.Flex as Flex
 import Bootstrap.Utilities.Size as Size
 import Bootstrap.Utilities.Spacing as Spacing
@@ -206,7 +207,7 @@ viewConfiguration : Configuration -> Html.Html msg
 viewConfiguration configuration =
     Html.div []
         (Configuration.toMultiLineString configuration
-            |> List.map (\t -> Html.div [] [ Html.text t ])
+            |> List.map (\t -> Html.div [ Html.Attributes.class "text-left" ] [ Html.text t ])
             |> List.singleton
             |> List.map (Html.p [])
         )
